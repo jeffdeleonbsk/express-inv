@@ -1,3 +1,4 @@
+import { DomainError } from "../../common/domainError";
 import { Result } from "../../common/result";
 import { Role } from "./role";
 import { RoleAccess } from "./roleAccess";
@@ -79,6 +80,16 @@ export class User {
         }
         if (ra.canUpdateObject) { return true; }
         return (ra.canUpdateOwnObject && this._id === ownerId);
+    }
+    public isActive(): boolean {
+        return this.status.toUpperCase() === "ACTIVE";
+    }
+    public updateName(firstName: string, lastName: string) {
+        if (this.isActive() === false) {
+            throw new DomainError("Cannot edit inactive user");
+        }
+        this._firstname = firstName;
+        this._lastname = lastName;
     }
     private getAccess(resourceCode: string): RoleAccess|undefined {
         if (this._role) {

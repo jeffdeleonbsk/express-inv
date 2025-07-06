@@ -17,7 +17,7 @@ export class DefaultExecutor<U extends object> implements IExecutor<U> {
             // might need to call rollback
             if (e instanceof DomainError) {
                 return Result.domainFailed((e as DomainError).message);
-            } 
+            }
             const err = (e as Error);
             const appErrors =  (err.stack) ? err.stack : err.message;
             return Result.Exception([appErrors], Result.EXCEPTION,   err.message);

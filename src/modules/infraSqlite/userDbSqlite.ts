@@ -115,15 +115,14 @@ export class UserDbSqlite implements IUserDb {
         return this.getAllStmt.all();
     }
     public async Add(usr: DomainUser): Promise<number> {
-        this.beginStmt.run();
         const ret =  this.addStmt.run(usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code);
-        this.commitStmt.run();
+
         return ret.lastInsertRowid;
     }
     public async Update(usr: DomainUser): Promise<number> {
-        this.beginStmt.run();
+        console.log("User To Update: ", usr);
         const ret =  this.updateStmt.run(usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code, usr.id);
-        this.commitStmt.run();
+
         return ret.changes;
     }
     public async Delete(usr: DomainUser): Promise<number> {

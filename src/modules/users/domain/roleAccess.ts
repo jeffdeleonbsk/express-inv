@@ -1,7 +1,33 @@
 import { DomainError } from "../../common/domainError";
 
-// value object 
+// value object
+export interface IRoleAccess {
+        _id: number;
+        _roleCode: string;
+        _reourceCode: string;
+        _canList: number;
+        _canReadOwnObject: number;
+        _canUpdateOwnObject: number;
+        _canDeleteOwnObject: number;
+        _canDeleteObject: number;
+        _canAddObject: number;
+        _canUpdateObject: number;
+}
 export class RoleAccess {
+    public static createFrom({
+        _id, _roleCode, _reourceCode, _canList,
+        _canReadOwnObject, _canUpdateOwnObject,
+        _canDeleteOwnObject, _canDeleteObject,
+        _canAddObject, _canUpdateObject
+    }: IRoleAccess): RoleAccess {
+        return new RoleAccess(
+            _id, _roleCode, _reourceCode, _canList,
+            _canReadOwnObject, _canUpdateOwnObject,
+            _canDeleteOwnObject, _canDeleteObject,
+            _canAddObject, _canUpdateObject
+        );
+
+    }
     public constructor(
         private _id: number,
         private _roleCode: string,
