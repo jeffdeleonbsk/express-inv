@@ -1,11 +1,11 @@
 import Database from "better-sqlite3";
-import { Role } from "../users/domain/role";
-import { RoleAccess } from "../users/domain/roleAccess";
-import { User as DomainUser } from "../users/domain/user";
-import { IUserDb } from "../users/iUserDb";
+import { Role } from "../domain/users/models/role";
+import { RoleAccess } from "../domain/users/models/roleAccess";
+import { User as DomainUser } from "../domain/users/models/user";
+import { IUserDb } from "../domain/users/iUserDb";
 
 interface IUser {
-    id: number;
+    id: string;
     firstname: string;
     lastname: string;
     email: string;
@@ -46,12 +46,12 @@ export class UserDbSqlite implements IUserDb {
         const dbName = process.env.SQLITE_DB;
         const db = new Database(dbName);
         db.pragma("journal_mode = WAL");
-        this.addStmt = db.prepare<[string, string, string, string, string], number>(
-            "INSERT INTO users (firstname, lastname, email, status, role_code) VALUES (?, ?, ?, ?, ?)"
+        this.addStmt = db.prepare<[string, string, string, string, string, string], number>(
+            "INSERT INTO users (id, firstname, lastname, email, status, role_code) VALUES (?, ?, ?, ?, ?, ?)"
         );
         this.getStmt = db.prepare<[number], IUser>("SELECT * FROM users WHERE id=?");
         this.getAllStmt = db.prepare<[], IUser>("SELECT * FROM users");
-        this.updateStmt = db.prepare<[string, string, string, string, string, number], number>(
+        this.updateStmt = db.prepare<[string, string, string, string, string, string], number>(
             "Update users SET firstname=?, lastname=?, email=?, status=?, role_code=? WHERE id=?"
         );
         this.deleteStmt = db.prepare<[number], number>("DELETE FROM users WHERE id=?");
@@ -72,13 +72,13 @@ export class UserDbSqlite implements IUserDb {
                 ra.id,
                 ra.role_code,
                 ra.resource_code,
-                ra.can_list,
-                ra.can_read_own_object,
-                ra.can_update_own_object,
-                ra.can_delete_own_object,
-                ra.can_delete_object,
-                ra.can_add_object,
-                ra.can_update_object
+                ra.can_list>0,
+                ra.can_read_own_object>0,
+                ra.can_update_own_object>0,
+                ra.can_delete_own_object>0,
+                ra.can_delete_object>0,
+                ra.can_add_object>0,
+                ra.can_update_object>0
             );
         });
         return ret;
@@ -96,7 +96,7 @@ export class UserDbSqlite implements IUserDb {
     }
 
     public async GetUserById(
-        id: number,
+        id: string,
         loadRole: boolean = true,
         loadRoleAccess: boolean = true
     ): Promise<DomainUser> {
@@ -115,7 +115,7 @@ export class UserDbSqlite implements IUserDb {
         return this.getAllStmt.all();
     }
     public async Add(usr: DomainUser): Promise<number> {
-        const ret =  this.addStmt.run(usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code);
+        const ret =  this.addStmt.run(usr.id, usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code);
 
         return ret.lastInsertRowid;
     }

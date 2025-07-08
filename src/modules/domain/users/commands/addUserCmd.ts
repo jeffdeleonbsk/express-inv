@@ -1,10 +1,10 @@
 
-import { BaseCommand } from "../../common/baseCommand";
-import { IExecutor } from "../../common/executor";
-import { Result } from "../../common/result";
+import { BaseCommand } from "../../../common/baseCommand";
+import { IExecutor } from "../../../common/executor";
+import { Result } from "../../../common/result";
 
-import { Role } from "../domain/role";
-import { User } from "../domain/user";
+import { Role } from "../models/role";
+import { User } from "../models/user";
 import { IUserDb } from "../iUserDb";
 
 export class AddUserRequest {
@@ -18,7 +18,6 @@ export class AddUserRequest {
     }
     public async mapRequestToUser(db: IUserDb): Promise<Result<User>> {
         return  User.createNew(
-            0,
             this.firstname,
             this.lastname,
             this.email,
@@ -39,7 +38,7 @@ export class AddUserResponse {
         );
     }
     public constructor(
-        public id?: number,
+        public id?: string,
         public firstname?: string,
         public lastname?: string,
         public email?: string,
@@ -62,7 +61,7 @@ export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
 
         const ret = await this.db.Add(usrRet.result);
 
-        const usrAdd = await this.db.GetUserById(ret, true, false);
+        const usrAdd = await this.db.GetUserById(usrRet.result.id, true, false);
         if (usrAdd) {
             return Result.Ok(AddUserResponse.mapFromUser(usrAdd));
         }

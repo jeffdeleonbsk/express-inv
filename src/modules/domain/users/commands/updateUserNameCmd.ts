@@ -1,11 +1,11 @@
-import { BaseCommand } from "../../common/baseCommand";
-import { IExecutor } from "../../common/executor";
-import { Result } from "../../common/result";
+import { BaseCommand } from "../../../common/baseCommand";
+import { IExecutor } from "../../../common/executor";
+import { Result } from "../../../common/result";
 import { IUserDb } from "../iUserDb";
 
 export class UpdateUserRequest {
     public constructor(
-        public id: number,
+        public id: string,
         public firstname: string,
         public lastname: string
     ) {
@@ -13,7 +13,7 @@ export class UpdateUserRequest {
 }
 export class UpdateUserResponse {
     public constructor(
-        public id: number,
+        public id: string,
         public firstname: string,
         public lastname: string
     ) {

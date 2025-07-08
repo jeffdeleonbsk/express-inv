@@ -1,12 +1,13 @@
-import { DomainError } from "../../common/domainError";
-import { Result } from "../../common/result";
+import { DomainError } from "../../../common/domainError";
+import { Result } from "../../../common/result";
 import { Role } from "./role";
 import { RoleAccess } from "./roleAccess";
 import { RoleResource } from "./roleResource";
+import { v4 as uuidv4 } from 'uuid';
 
 // Aggregate Root
 export class User {
-    public get id(): number {
+    public get id(): string {
         return this._id;
     }
     public get firstname(): string {
@@ -25,7 +26,6 @@ export class User {
         return this._role;
     }
     public static createNew(
-        id: number,
         firstname: string,
         lastname: string,
         email: string,
@@ -36,12 +36,12 @@ export class User {
             return Result.domainFailed( "Please set the role for this user");
         }
         const user = new User(
-            id, firstname, lastname, email, status, role
+            uuidv4(), firstname, lastname, email, status, role
         );
         return Result.Ok(user);
     }
     public constructor(
-        private _id: number,
+        private _id: string,
         private _firstname: string,
         private _lastname: string,
         private _email: string,
@@ -50,7 +50,7 @@ export class User {
     ) {
 
     }
-    public hasReadAccess(resource: RoleResource, ownerId: number = 0): boolean {
+    public hasReadAccess(resource: RoleResource, ownerId: string): boolean {
         const ra = this.getAccess(resource.code);
         if (ra === undefined) {
             return false;
@@ -58,14 +58,14 @@ export class User {
         if (ra.canList) { return true; }
         return (ra.canReadOwnObject && this._id === ownerId);
     }
-    public hasAddAccess(resource: RoleResource, ownerId: number = 0): boolean {
+    public hasAddAccess(resource: RoleResource, ownerId: string): boolean {
         const ra = this.getAccess(resource.code);
         if (ra === undefined) {
             return false;
         }
         return ra.canAddObject;
     }
-    public hasDeleteAccess(resource: RoleResource, ownerId: number = 0): boolean {
+    public hasDeleteAccess(resource: RoleResource, ownerId: string): boolean {
         const ra = this.getAccess(resource.code);
         if (ra === undefined) {
             return false;
@@ -73,7 +73,7 @@ export class User {
         if (ra.canDeleteObject) { return true; }
         return (ra.canDeleteOwnObject && this._id === ownerId);
     }
-    public hasUpdateAccess(resource: RoleResource, ownerId: number = 0): boolean {
+    public hasUpdateAccess(resource: RoleResource, ownerId: string): boolean {
         const ra = this.getAccess(resource.code);
         if (ra === undefined) {
             return false;

@@ -1,5 +1,5 @@
 CREATE TABLE "users" (
-	"id" INTEGER NOT NULL,
+	"id" VARCHAR(40) NOT NULL,
 	"firstname" VARCHAR(255) NULL,
 	"lastname" VARCHAR(255) NULL,
 	"email" VARCHAR(255) NULL,
@@ -16,8 +16,9 @@ CREATE TABLE "roles" (
 	PRIMARY KEY ("code")
 );
 CREATE TABLE "role_access" (
-	"id" INTEGER NOT NULL,
-	"role_code" VARCHAR(20) NULL,
+	"id" VARCHAR(40) NOT NULL,
+	"role_code" VARCHAR(20) NULL,	
+	"resource_code" VARCHAR(20) NULL,
 	"can_list" TINYINT NULL,
 	"can_read_own_object" TINYINT NULL,
 	"can_update_own_object" TINYINT NULL,
@@ -25,7 +26,6 @@ CREATE TABLE "role_access" (
 	"can_delete_object" TINYINT NULL,
 	"can_add_object" TINYINT NULL,
 	"can_update_object" TINYINT NULL,
-	"resource_code" VARCHAR(20) NULL,
 	PRIMARY KEY ("id")
 );
 
