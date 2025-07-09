@@ -1,4 +1,4 @@
 
 export interface IUserAccessService {
-    getUserAccess():void;
+    getUserAccess(): void;
 }

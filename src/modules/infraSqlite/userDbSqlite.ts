@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
+import { IUserDb } from "../domain/users/iUserDb";
 import { Role } from "../domain/users/models/role";
 import { RoleAccess } from "../domain/users/models/roleAccess";
 import { User as DomainUser } from "../domain/users/models/user";
-import { IUserDb } from "../domain/users/iUserDb";
 
 interface IUser {
     id: string;
@@ -72,13 +72,13 @@ export class UserDbSqlite implements IUserDb {
                 ra.id,
                 ra.role_code,
                 ra.resource_code,
-                ra.can_list>0,
-                ra.can_read_own_object>0,
-                ra.can_update_own_object>0,
-                ra.can_delete_own_object>0,
-                ra.can_delete_object>0,
-                ra.can_add_object>0,
-                ra.can_update_object>0
+                ra.can_list > 0,
+                ra.can_read_own_object > 0,
+                ra.can_update_own_object > 0,
+                ra.can_delete_own_object > 0,
+                ra.can_delete_object > 0,
+                ra.can_add_object > 0,
+                ra.can_update_object > 0
             );
         });
         return ret;

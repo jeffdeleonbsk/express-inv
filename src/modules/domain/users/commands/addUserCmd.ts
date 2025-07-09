@@ -3,9 +3,9 @@ import { BaseCommand } from "../../../common/baseCommand";
 import { IExecutor } from "../../../common/executor";
 import { Result } from "../../../common/result";
 
+import { IUserDb } from "../iUserDb";
 import { Role } from "../models/role";
 import { User } from "../models/user";
-import { IUserDb } from "../iUserDb";
 
 export class AddUserRequest {
     public constructor(
