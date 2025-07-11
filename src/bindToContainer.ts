@@ -1,12 +1,10 @@
 
 import { token } from "brandi";
-import { DefaultExecutorFactory } from "./modules/common/DefaultExecutor";
 import { container, TOKEN_MAP } from "./modules/common/diContainer";
-import { IExecutorFactory } from "./modules/common/executor";
 import { IUserDb } from "./modules/users/iUserDb";
 import { UserDbSqlite } from "./modules/infraSqlite/userDbSqlite";
-import { IEmailDuplicateService } from "./modules/users/iEmailDuplicateService";
-import { EmailDuplicateService } from "./modules/infraSqlite/EmailDuplicateService";
+import { IEmailExistsService } from "./modules/users/domain/iEmailExistsService";
+import { EmailExistsService } from "./modules/infraSqlite/EmailExistsService";
 export function bindToContainer() {
     console.log("Binding in container");
 
@@ -16,16 +14,10 @@ export function bindToContainer() {
         .bind(TOKEN_MAP.get("UserDb"))
         .toInstance(UserDbSqlite)
         .inSingletonScope();
-    TOKEN_MAP.set("ExecutorFactory", token<IExecutorFactory>("ExecutorFactory"));
+    TOKEN_MAP.set("EmailExistsService", token<IEmailExistsService>("EmailExistsService"));
     container
-        .bind(TOKEN_MAP.get("ExecutorFactory"))
-        .toInstance(DefaultExecutorFactory)
-        .inTransientScope();
-
-    TOKEN_MAP.set("EmailDuplicateService", token<IEmailDuplicateService>("EmailDuplicateService"));
-    container
-        .bind(TOKEN_MAP.get("EmailDuplicateService"))
-        .toInstance(EmailDuplicateService)
+        .bind(TOKEN_MAP.get("EmailExistsService"))
+        .toInstance(EmailExistsService)
         .inSingletonScope();        
 
 }

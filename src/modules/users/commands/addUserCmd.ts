@@ -1,31 +1,25 @@
 
 import { BaseCommand } from "../../common/baseCommand";
-import { IExecutor } from "../../common/executor";
 import { Result } from "../../common/result";
-import { IEmailDuplicateService } from "../iEmailDuplicateService";
+import { IEmailExistsService } from "../domain/iEmailExistsService";
 
 import { IUserDb } from "../iUserDb";
-import { Role } from "../models/role";
-import { User } from "../models/user";
+import { Role } from "../domain/role";
+import { User } from "../domain/user";
+import { getInstance } from "../../common/diContainer";
+import { UserStatus } from "../../domain/common/enums";
 
 export class AddUserRequest {
     public constructor(
         public firstname: string,
         public lastname: string,
         public email: string,
-        public status: string,
-        public roleCode: string
+        public password: string,
+        public status?: UserStatus|null,
+        public roleCode?: string
     ) {
     }
-    public async mapRequestToUser(db: IUserDb): Promise<Result<User>> {
-        return  User.createNew(
-            this.firstname,
-            this.lastname,
-            this.email,
-            this.status,
-            await db.GetRoleByCode(this.roleCode, true)
-        );
-    }
+
 }
 export class AddUserResponse {
     public static mapFromUser(usr: User): AddUserResponse {
@@ -50,25 +44,36 @@ export class AddUserResponse {
 
 export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
     private db: IUserDb;
-    private emailService: IEmailDuplicateService;
-    public constructor(req: AddUserRequest, db: IUserDb, exec: IExecutor<AddUserResponse>, emailService: IEmailDuplicateService) {
-      super(req, exec);
-      this.db = db;
-      this.emailService = emailService;
+    private emailService;
+    public constructor(req: AddUserRequest, db: IUserDb, emailService: IEmailExistsService) {
+        super(req);
+        this.db = db;
+        this.emailService = emailService;
+    }
+    private async mapRequestToUser(req: AddUserRequest, db: IUserDb): Promise<Result<User>> {
+        const status = req.status?req.status:UserStatus.INACTIVE;
+        const role = req.roleCode?req.roleCode: "";
+        return  User.createNew(
+            req.firstname,
+            req.lastname,
+            req.email,
+            req.password,
+            status,
+            await db.GetRoleByCode(role, true),
+            this.emailService
+        );
     }
     public async doCommand(): Promise<Result<AddUserResponse>> {
-        const usrRet = await this.request.mapRequestToUser(this.db);
+        const usrRet = await this.mapRequestToUser(this.request,this.db);
         if (usrRet.isSuccess === false) {
             return usrRet;
         }
-
         const ret = await this.db.Add(usrRet.result);
-
         const usrAdd = await this.db.GetUserById(usrRet.result.id, true, false);
         if (usrAdd) {
             return Result.Ok(AddUserResponse.mapFromUser(usrAdd));
         }
-        return Result.appFailed("Unable to retrieve the inserted User", "Unable to find inserted User");
+        return Result.domainFailed("Unable to retrieve the inserted User");
     }
     protected getValidationRules(): any {
         return {

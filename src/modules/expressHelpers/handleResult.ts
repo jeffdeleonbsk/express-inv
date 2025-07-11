@@ -32,13 +32,6 @@ export function genericHandleJsonResult<T, U>(
     req: T,
     result: Result<U>
 ): void {
-    if (result.isSuccess) {
-        response.json(result);
-    } else {
-        if (result.code === Result.VALIDATION_FAILED) {
-            response.status(422).json(result);
-        } else {
-            response.status(422).json(result);
-        }
-    }
+    response.status(result.isSuccess?200:422).json(result)
+
 }

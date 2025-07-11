@@ -1,10 +1,10 @@
 import Database from "better-sqlite3";
-import { IEmailDuplicateService } from "../users/iEmailDuplicateService";
+import { IEmailExistsService } from "../users/domain/iEmailExistsService";
 
 interface IUserCnt {
     cnt: number;
 } 
-export class EmailDuplicateService implements IEmailDuplicateService
+export class EmailExistsService implements IEmailExistsService
 {
     private getStmt: any;
     private db:any;

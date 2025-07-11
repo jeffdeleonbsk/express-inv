@@ -1,5 +1,4 @@
 import { BaseCommand } from "../../common/baseCommand";
-import { IExecutor } from "../../common/executor";
 import { Result } from "../../common/result";
 import { IUserDb } from "../iUserDb";
 
@@ -21,8 +20,8 @@ export class UpdateUserResponse {
 }
 export class UpdateUserNameCmd extends BaseCommand<UpdateUserRequest, UpdateUserResponse> {
     private db: IUserDb;
-    public constructor(req: UpdateUserRequest, db: IUserDb, exec: IExecutor<UpdateUserResponse>) {
-      super(req, exec);
+    public constructor(req: UpdateUserRequest, db: IUserDb) {
+      super(req);
       this.db = db;
     }
     public  async doCommand(): Promise<Result<UpdateUserResponse>> {

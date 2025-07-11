@@ -1,18 +1,12 @@
 import { Validator } from "node-input-validator";
-import { DefaultExecutor } from "./DefaultExecutor";
-import { ICommandExecutor, IExecutor } from "./executor";
 import { Result } from "./result";
+import { DomainError } from "./domainError";
 
-export abstract class BaseCommand<T extends object, U extends object> implements ICommandExecutor<U> {
+export abstract class BaseCommand<T extends object, U extends object>  {
     protected request: T;
-    private executor?: IExecutor<U>;
-    public constructor(req: T, executor?: IExecutor<U>) {
+    public constructor(req: T) {
         this.request = req;
-        if (executor) {
-            this.executor = executor;
-        } else {
-            this.executor = new DefaultExecutor();
-        }
+
     }
 
     public async execute(): Promise<Result<U>> {
@@ -20,11 +14,21 @@ export abstract class BaseCommand<T extends object, U extends object> implements
         if (retValidation.isSuccess === false) {
             return retValidation;
         }
-        if (this.executor) {
-            return await this.executor.execute(this);
-        }
+        try {
+            const ret = await this.doCommand();
+            if (ret.isSuccess === false) {
+                return ret;
+            }
+            return ret;
+        } catch (e: any) {
+            if (e instanceof DomainError) {
+                return Result.domainFailed((e as DomainError).message);
+            }
+            const err = (e as Error);
+            const appErrors =  (err.stack) ? err.stack : err.message;
+            return Result.Exception([appErrors], Result.EXCEPTION,   err.message);
+        }        
 
-        return await this.doCommand();
     }
     public abstract doCommand(): Promise<Result<U>>;
 

@@ -1,4 +1,4 @@
 
-export interface IEmailDuplicateService {
+export interface IEmailExistsService {
     emailExists(email:string) : boolean;
 }

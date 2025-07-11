@@ -1,14 +1,16 @@
 import Database from "better-sqlite3";
 import { IUserDb } from "../users/iUserDb";
-import { Role } from "../users/models/role";
-import { RoleAccess } from "../users/models/roleAccess";
-import { User as DomainUser } from "../users/models/user";
+import { Role } from "../users/domain/role";
+import { RoleAccess } from "../users/domain/roleAccess";
+import { User as DomainUser } from "../users/domain/user";
+import { stringToUserStatus } from "../domain/common/enums";
 
 interface IUser {
     id: string;
     firstname: string;
     lastname: string;
     email: string;
+    password: string;
     status: string;
     role_code: string;
 }
@@ -31,6 +33,7 @@ interface IRoleAccess {
 export class UserDbSqlite implements IUserDb {
     private db: any;
     private getStmt: any;
+    private getByEmailStmt:any;
     private getAllStmt: any;
     private addStmt: any;
     private updateStmt: any;
@@ -46,13 +49,14 @@ export class UserDbSqlite implements IUserDb {
         const dbName = process.env.SQLITE_DB;
         const db = new Database(dbName);
         db.pragma("journal_mode = WAL");
-        this.addStmt = db.prepare<[string, string, string, string, string, string], number>(
-            "INSERT INTO users (id, firstname, lastname, email, status, role_code) VALUES (?, ?, ?, ?, ?, ?)"
+        this.addStmt = db.prepare<[string, string, string, string, string, string, string], number>(
+            "INSERT INTO users (id, firstname, lastname, email, password, status, role_code) VALUES (?, ?, ?, ?, ?, ?)"
         );
         this.getStmt = db.prepare<[number], IUser>("SELECT * FROM users WHERE id=?");
+        this.getByEmailStmt = db.prepare<[string], IUser>("SELECT * FROM users WHERE email=?");
         this.getAllStmt = db.prepare<[], IUser>("SELECT * FROM users");
-        this.updateStmt = db.prepare<[string, string, string, string, string, string], number>(
-            "Update users SET firstname=?, lastname=?, email=?, status=?, role_code=? WHERE id=?"
+        this.updateStmt = db.prepare<[string, string, string, string, string, string, string], number>(
+            "Update users SET firstname=?, lastname=?, email=?, password=? status=?, role_code=? WHERE id=?"
         );
         this.deleteStmt = db.prepare<[number], number>("DELETE FROM users WHERE id=?");
 
@@ -94,6 +98,23 @@ export class UserDbSqlite implements IUserDb {
         }
         return null;
     }
+public async GetUserByEmail(
+        email: string,
+        loadRole: boolean = true,
+        loadRoleAccess: boolean = true
+    ): Promise<DomainUser> {
+        const ret: IUser = this.getByEmailStmt.get(email);
+        const usr = new DomainUser(
+            ret.id,
+            ret.firstname,
+            ret.lastname,
+            ret.email,
+            ret.password,
+            stringToUserStatus(ret.status),
+            loadRole ? await this.GetRoleByCode(ret.role_code, loadRoleAccess) : null
+        );
+        return usr;
+    }    
 
     public async GetUserById(
         id: string,
@@ -106,7 +127,8 @@ export class UserDbSqlite implements IUserDb {
             ret.firstname,
             ret.lastname,
             ret.email,
-            ret.status,
+            ret.password,
+            stringToUserStatus(ret.status),
             loadRole ? await this.GetRoleByCode(ret.role_code, loadRoleAccess) : null
         );
         return usr;
@@ -115,13 +137,13 @@ export class UserDbSqlite implements IUserDb {
         return this.getAllStmt.all();
     }
     public async Add(usr: DomainUser): Promise<number> {
-        const ret =  this.addStmt.run(usr.id, usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code);
+        const ret =  this.addStmt.run(usr.id, usr.firstname, usr.lastname, usr.email, usr.password, usr.status, usr.role!.code);
 
         return ret.lastInsertRowid;
     }
     public async Update(usr: DomainUser): Promise<number> {
         console.log("User To Update: ", usr);
-        const ret =  this.updateStmt.run(usr.firstname, usr.lastname, usr.email, usr.status, usr.role!.code, usr.id);
+        const ret =  this.updateStmt.run(usr.firstname, usr.lastname, usr.email, usr.password, usr.status, usr.role!.code, usr.id);
 
         return ret.changes;
     }

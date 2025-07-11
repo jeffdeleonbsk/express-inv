@@ -3,55 +3,32 @@ import { AddUserCmd, AddUserRequest, AddUserResponse } from "./commands/addUserC
 import { UpdateUserNameCmd, UpdateUserRequest, UpdateUserResponse } from "./commands/updateUserNameCmd";
 
 import { getInstance } from "../common/diContainer";
-import { IExecutorFactory } from "../common/executor";
-import { genericHandleJsonResult, genericHandleViewResult } from "../expressHelpers/handleResult";
-import { Result } from "../common/result";
-import { IEmailDuplicateService } from "./iEmailDuplicateService";
+import { IEmailExistsService } from "./domain/iEmailExistsService";
 
 const router: Router = Router();
 
-router.get("/login", async (request: Request, response: Response) => {
-   // response.json({"name": "ewan"});
-    genericHandleViewResult<{}, {}>(response, {}, Result.Ok({}), "domain/users/views/login", "layouts/loginLayout");
-});
-router.get("/testpage", async (request: Request, response: Response) => {
-   // response.json({"name": "ewan"});
-    genericHandleViewResult<{}, {}>(response, {}, Result.Ok({}), "domain/users/views/test", "layouts/tailwind");
-});
 router.get("/:id", async (request: Request, response: Response) => {
     const db = getInstance("UserDb");
     const ret = await db.GetUserById(request.params.id);
     response.json(ret);
-  //  genericHandleJsonResult<AddUserRequest, AddUserResponse>(response, cmdRequest, cmdResult);
 });
-router.get("/test2", async (request: Request, response: Response) => {
+
+
+router.post("/", async (request: Request, response: Response) => {
+    const {firstname, lastname, email, status, role} = request.body;
+    const cmdRequest = new AddUserRequest(firstname, lastname, email, status, role);
     const db = getInstance("UserDb");
-    const factory: IExecutorFactory = getInstance("ExecutorFactory");
-    const emailService: IEmailDuplicateService = getInstance("EmailDuplicateService");
-    
-    const cmdRequest = new AddUserRequest("jeff", "deleon", "jeffdeleonbsk@gmail.com", "active", "ADMIN");
-    const cmd = new AddUserCmd(cmdRequest, db, factory.create<AddUserResponse>(), emailService);
+    const emailService: IEmailExistsService = getInstance("EmailExistsService");    
+    const cmd = new AddUserCmd(cmdRequest, db, emailService);
     const cmdResult = await cmd.execute();
-    genericHandleJsonResult<AddUserRequest, AddUserResponse>(response, cmdRequest, cmdResult);
+    response.status(cmdResult.isSuccess?200:422).json(cmdResult);
 });
 
-router.get("/test", async (request: Request, response: Response) => {
-
-    const db = getInstance("UserDb");
-    const factory: IExecutorFactory = getInstance("ExecutorFactory");
-    const cmdRequest = new AddUserRequest("jeff2", "deleon2", "email@email.com", "active", "");
-    const emailService: IEmailDuplicateService = getInstance("EmailDuplicateService");
-    const cmd = new AddUserCmd(cmdRequest, db, factory.create<AddUserResponse>(), emailService);
-    const cmdResult = await cmd.execute();
-    genericHandleJsonResult<AddUserRequest, AddUserResponse>(response, cmdRequest, cmdResult);
-});
-
-router.put("/:id", async (request: Request, res: Response) => {
-    const db = getInstance("UserDb");
-    const factory: IExecutorFactory = getInstance("ExecutorFactory");
+router.put("/:id", async (request: Request, response: Response) => {
     const cmdRequest = new UpdateUserRequest(request.params.id, request.body.firstname, request.body.lastname);
-    const cmd = new UpdateUserNameCmd(cmdRequest, db, factory.create<UpdateUserResponse>());
+    const db = getInstance("UserDb");
+    const cmd = new UpdateUserNameCmd(cmdRequest, db);
     const cmdResult = await cmd.execute();
-    genericHandleJsonResult<UpdateUserRequest, UpdateUserResponse>(res, cmdRequest, cmdResult);
+    response.status(cmdResult.isSuccess?200:422).json(cmdResult);
 });
 export default router;

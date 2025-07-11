@@ -4,6 +4,9 @@ import { Result } from "../../common/result";
 import { Role } from "./role";
 import { RoleAccess } from "./roleAccess";
 import { RoleResource } from "./roleResource";
+import { IEmailExistsService } from "./iEmailExistsService";
+import { UserStatus } from "../../domain/common/enums";
+import * as bcrypt from 'bcrypt';
 
 // Aggregate Root
 export class User {
@@ -19,7 +22,10 @@ export class User {
     public get email(): string {
         return this._email;
     }
-    public get status(): string {
+    public get password(): string {
+        return this._password;
+    }
+    public get status(): UserStatus {
         return this._status;
     }
     public get role(): Role | null {
@@ -29,14 +35,19 @@ export class User {
         firstname: string,
         lastname: string,
         email: string,
-        status: string,
-        role: Role|null
+        password: string,
+        status: UserStatus,
+        role: Role|null,
+        emailService: IEmailExistsService
     ): Result<User> {
+        if (emailService.emailExists(email)) {
+            return Result.domainFailed( `Email {$email} already exists` );
+        }
         if (role === null) {
             return Result.domainFailed( "Please set the role for this user");
         }
         const user = new User(
-            uuidv4(), firstname, lastname, email, status, role
+            uuidv4(), firstname, lastname, email, password, status, role
         );
         return Result.Ok(user);
     }
@@ -45,10 +56,10 @@ export class User {
         private _firstname: string,
         private _lastname: string,
         private _email: string,
-        private _status: string,
+        private _password: string,
+        private _status: UserStatus,
         private _role: Role | null
     ) {
-
     }
     public hasReadAccess(resource: RoleResource, ownerId: string): boolean {
         const ra = this.getAccess(resource.code);
@@ -91,6 +102,25 @@ export class User {
         this._firstname = firstName;
         this._lastname = lastName;
     }
+    public async updatePassword(oldPass: string, newPass: string, confirmNewPass: string) : Promise<void>{
+        if (this.isActive() === false) {
+            throw new DomainError("Cannot edit inactive user");
+        }
+        if (confirmNewPass !== newPass) {
+            throw new DomainError("COnfirm password does not match new password");
+        }
+        const confirmOld = await bcrypt.compare(oldPass, this._password);
+        if (confirmOld === false) {
+            throw new DomainError("Must provide correct old password");
+        }
+        this._password = await bcrypt.hash(newPass, 10);
+    }    
+    public async checkPassword(password: string): Promise<boolean>{
+        if (this.isActive() === false) {
+            throw new DomainError("Cannot edit inactive user");
+        }
+        return await bcrypt.compare(password, this._password);
+    }     
     private getAccess(resourceCode: string): RoleAccess|undefined {
         if (this._role) {
             return this._role.getRoleAccess(resourceCode);
