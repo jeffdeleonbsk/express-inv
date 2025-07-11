@@ -3,9 +3,10 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import expressLayouts from "express-ejs-layouts";
 import path from "path";
-import usersRouter from "./modules/users/routes";
+import authRouter from "./app/routes/authRoutes";
+import usersRouter from "./app/routes/userRoutes";
 
-import { bindToContainer } from "./bindToContainer";
+import { bindToContainer } from "./app/bindToContainer";
 
 dotenv.config();
 const app = express();
@@ -22,6 +23,7 @@ app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "modules"));
 
 app.use("/api/users", usersRouter);
+app.use("/api/auth", authRouter);
 
 app.listen(PORT, () => {
     bindToContainer();

@@ -25,7 +25,7 @@ export class UpdateUserNameCmd extends BaseCommand<UpdateUserRequest, UpdateUser
       this.db = db;
     }
     public async doCommand(): Promise<Result<UpdateUserResponse>> {
-        const usr = await this.db.GetUserById(this.request.id, true, false );
+        const usr = await this.db.GetUserById(this.request.id);
         if (usr) {
             usr.updateName(this.request.firstname, this.request.lastname);
             const changed = await this.db.Update(usr);

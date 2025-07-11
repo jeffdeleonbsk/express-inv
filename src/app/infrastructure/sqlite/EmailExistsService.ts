@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { IEmailExistsService } from "../domain/interfaces/iEmailExistsService";
+import { IEmailExistsService } from "../../../modules/domain/interfaces/iEmailExistsService";
 
 interface IUserCnt {
     cnt: number;
@@ -16,7 +16,6 @@ export class EmailExistsService implements IEmailExistsService {
     }
     public emailExists(email: string): boolean {
         const ret = this.getStmt.get(email);
-        console.log("emailExists" , ret);
         return ret.cnt > 0;
     }
 

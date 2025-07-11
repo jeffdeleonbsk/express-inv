@@ -1,9 +1,8 @@
 import Database from "better-sqlite3";
-import { stringToUserStatus } from "../domain/common/enums";
-import { Role } from "../users/domain/role";
-import { RoleAccess } from "../users/domain/roleAccess";
-import { User as DomainUser } from "../users/domain/user";
-import { IUserDb } from "../users/iUserDb";
+import { stringToUserStatus } from "../../../modules/domain/common/enums";
+import { IUserDb } from "../../../modules/users/iUserDb";
+import { Role } from "../../../modules/users/models/role";
+import { User as DomainUser } from "../../../modules/users/models/user";
 
 interface IUser {
     id: string;
@@ -18,18 +17,7 @@ interface IRole {
     code: string;
     is_active: number;
 }
-interface IRoleAccess {
-    id: number;
-    role_code: string;
-    resource_code: string;
-    can_list: number;
-    can_read_own_object: number;
-    can_update_own_object: number;
-    can_delete_own_object: number;
-    can_delete_object: number;
-    can_add_object: number;
-    can_update_object: number;
-}
+
 export class UserDbSqlite implements IUserDb {
     private db: any;
     private getStmt: any;
@@ -43,7 +31,6 @@ export class UserDbSqlite implements IUserDb {
     private rollbackStmt: any;
 
     private getRoleStmt: any;
-    private getAllRoleAccessStmt: any;
 
     constructor() {
         const dbName = process.env.SQLITE_DB;
@@ -65,35 +52,14 @@ export class UserDbSqlite implements IUserDb {
         this.rollbackStmt = db.prepare("ROLLBACK");
 
         this.getRoleStmt = db.prepare<[string], IRole>("SELECT code, is_active FROM roles WHERE code=?");
-        this.getAllRoleAccessStmt = db.prepare<[string], IRoleAccess>("SELECT * FROM role_access WHERE role_code=?");
-
         this.db = db;
-    }
-    public async GetRoleAccessesByCode(code: string): Promise<RoleAccess[]> {
-        const retAccess: IRoleAccess[] = this.getAllRoleAccessStmt.all(code);
-        const ret = retAccess.map((ra) => {
-            return new RoleAccess(
-                ra.id,
-                ra.role_code,
-                ra.resource_code,
-                ra.can_list > 0,
-                ra.can_read_own_object > 0,
-                ra.can_update_own_object > 0,
-                ra.can_delete_own_object > 0,
-                ra.can_delete_object > 0,
-                ra.can_add_object > 0,
-                ra.can_update_object > 0
-            );
-        });
-        return ret;
     }
     public async GetRoleByCode(code: string, loadRoleAccess: boolean = true): Promise<Role|null> {
         const ret: IRole = this.getRoleStmt.get(code);
         if (ret) {
             return new Role(
                 ret.code,
-                ret.is_active,
-                (loadRoleAccess) ? await this.GetRoleAccessesByCode(code) : null
+                ret.is_active
             );
         }
         return null;
@@ -102,8 +68,11 @@ public async GetUserByEmail(
         email: string,
         loadRole: boolean = true,
         loadRoleAccess: boolean = true
-    ): Promise<DomainUser> {
+    ): Promise<DomainUser|null> {
         const ret: IUser = this.getByEmailStmt.get(email);
+        if (!ret) {
+            return null;
+        }
         const usr = new DomainUser(
             ret.id,
             ret.firstname,
@@ -111,17 +80,18 @@ public async GetUserByEmail(
             ret.email,
             ret.password,
             stringToUserStatus(ret.status),
-            loadRole ? await this.GetRoleByCode(ret.role_code, loadRoleAccess) : null
+            await this.GetRoleByCode(ret.role_code)
         );
         return usr;
     }
 
     public async GetUserById(
-        id: string,
-        loadRole: boolean = true,
-        loadRoleAccess: boolean = true
-    ): Promise<DomainUser> {
+        id: string
+    ): Promise<DomainUser| null> {
         const ret: IUser = this.getStmt.get(id);
+        if (!ret) {
+            return null;
+        }
         const usr = new DomainUser(
             ret.id,
             ret.firstname,
@@ -129,7 +99,7 @@ public async GetUserByEmail(
             ret.email,
             ret.password,
             stringToUserStatus(ret.status),
-            loadRole ? await this.GetRoleByCode(ret.role_code, loadRoleAccess) : null
+            await this.GetRoleByCode(ret.role_code)
         );
         return usr;
     }
@@ -154,5 +124,4 @@ public async GetUserByEmail(
         this.commitStmt.run();
         return ret.changes;
     }
-
 }

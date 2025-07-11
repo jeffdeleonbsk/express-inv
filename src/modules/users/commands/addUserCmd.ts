@@ -4,9 +4,9 @@ import { Result } from "../../common/result";
 import { IEmailExistsService } from "../../domain/interfaces/iEmailExistsService";
 
 import { UserStatus } from "../../domain/common/enums";
-import { Role } from "../domain/role";
-import { User } from "../domain/user";
 import { IUserDb } from "../iUserDb";
+import { Role } from "../models/role";
+import { User } from "../models/user";
 
 export class AddUserRequest {
     public constructor(
@@ -76,7 +76,7 @@ export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
             req.email,
             initialPassword,
             status,
-            await db.GetRoleByCode(role, true),
+            await db.GetRoleByCode(role),
             this.emailService
         );
     }

@@ -1,5 +1,5 @@
 import { Response } from "express";
-import { Result } from "../common/result";
+import { Result } from "../../modules/common/result";
 
 export function genericHandleViewResult<T, U>(
     response: Response,
