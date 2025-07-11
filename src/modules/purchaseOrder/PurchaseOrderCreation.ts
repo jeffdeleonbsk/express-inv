@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
 import { LineItemStatus, PurchaseOrderStatus } from "../common/enums";
-
+import { Money, Quantity } from "../common/valueObjects";
 // --- Value Objects / Entities ---
 
 export class Vendor {
@@ -44,11 +44,11 @@ export class PurchaseOrderLineItem {
     return this._warehouse;
   }
 
-  get orderedQuantity(): number {
+  get orderedQuantity(): Quantity {
     return this._orderedQuantity;
   }
 
-  get unitPrice(): number {
+  get unitPrice(): Money {
     return this._unitPrice;
   }
 
@@ -75,8 +75,8 @@ public static fromDB(params: {
     id: string;
     product: Product;
     warehouse: Warehouse;
-    orderedQuantity: number;
-    unitPrice: number;
+    orderedQuantity: Quantity;
+    unitPrice: Money;
     status: LineItemStatus;
     confirmComment?: string;
     cancelComment?: string;
@@ -102,8 +102,8 @@ public static fromDB(params: {
   public readonly id: string;
   public readonly product: Product;
   private _warehouse: Warehouse;
-  private _orderedQuantity: number;
-  private _unitPrice: number;
+  private _orderedQuantity: Quantity;
+  private _unitPrice: Money;
   private _status: LineItemStatus = LineItemStatus.DRAFT;
   private _confirmComment?: string;
   private _cancelComment?: string;
@@ -113,8 +113,8 @@ public static fromDB(params: {
   constructor(
     product: Product,
     warehouse: Warehouse,
-    orderedQuantity: number,
-    unitPrice: number,
+    orderedQuantity: Quantity,
+    unitPrice: Money,
     id?: string
   ) {
     if (!product.isActive) { throw new DomainError("Product must be active."); }
@@ -142,14 +142,14 @@ public static fromDB(params: {
     this._warehouse = warehouse;
   }
 
-  public updateOrderedQuantity(orderedQuantity: number) {
+  public updateOrderedQuantity(orderedQuantity: Quantity) {
     if (this._status !== LineItemStatus.DRAFT) {
       throw new DomainError("Can only update quantity in DRAFT status.");
     }
     this._orderedQuantity = orderedQuantity;
   }
 
-  public updateUnitPrice(unitPrice: number) {
+  public updateUnitPrice(unitPrice: Money) {
     if (this._status !== LineItemStatus.DRAFT) {
       throw new DomainError("Can only update unit price in DRAFT status.");
     }

@@ -3,7 +3,7 @@ import dotenv from "dotenv";
 import express, { Request, Response } from "express";
 import expressLayouts from "express-ejs-layouts";
 import path from "path";
-import usersRouter from "./modules/domain/users/routes";
+import usersRouter from "./modules/users/routes";
 
 import { bindToContainer } from "./bindToContainer";
 

@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from "uuid";
-import { DomainError } from "../../../common/domainError";
-import { Result } from "../../../common/result";
+import { DomainError } from "../../common/domainError";
+import { Result } from "../../common/result";
 import { Role } from "./role";
 import { RoleAccess } from "./roleAccess";
 import { RoleResource } from "./roleResource";

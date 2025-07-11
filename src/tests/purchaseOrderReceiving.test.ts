@@ -1,12 +1,13 @@
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
+import { Quantity } from "../modules/domain/common/valueObjects";
 import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/domain/purchaseOrder/PurchaseOrderReceiving";
 
 describe("ReceivingPurchaseOrder", () => {
 
   interface IStock {
-     productId: string|null ;
-     warehouseId: string|null;
-     deliveredQuantity: number|0 ;
+     productId: string ;
+     warehouseId: string;
+     deliveredQuantity: Quantity;
   }
   class MockInventoryService implements IAddToInventoryService {
     public stocks: IStock[] = [];
@@ -15,16 +16,15 @@ describe("ReceivingPurchaseOrder", () => {
         return stock2;
     }
 
-    public addStock(productId: string, warehouseId: string, deliveredQuantity: number): void {
-
+    public addStock(productId: string, warehouseId: string, deliveredQuantity: Quantity): void {
         const stock2 = this.stocks.find((stock) => stock.productId === productId && stock.warehouseId === warehouseId);
         if (stock2) {
-            stock2.deliveredQuantity += deliveredQuantity;
+            stock2.deliveredQuantity = new Quantity(stock2!.deliveredQuantity!.value + deliveredQuantity.value);
         } else {
             this.stocks.push({
                 productId,
                 warehouseId,
-                deliveredQuantity
+                deliveredQuantity:new Quantity(deliveredQuantity.value, deliveredQuantity.unit)
             });
         }
     }
@@ -35,14 +35,15 @@ describe("ReceivingPurchaseOrder", () => {
   const date = new Date("2025-07-08");
   const comment = "Received partial delivery";
 
+
   const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem =>
     new ReceivingLineItem(
       id,
       productId,
       warehouseId,
-      10,
+      new Quantity(10, "pcs"),
       LineItemStatus.CONFIRMED,
-      0,
+      new Quantity(0, "pcs"),
       [],
       undefined,
       undefined,
@@ -51,28 +52,28 @@ describe("ReceivingPurchaseOrder", () => {
     );
 
   it("should receive delivery and update statuses", () => {
-    const delivery = new Delivery("line-item-id", date, comment, 5);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
 
     po.receiveDelivery("line-item-id", delivery, mockInventoryService);
 
-    expect(lineItem.deliveredQuantity).toBe(5);
+    expect(lineItem.deliveredQuantity.value).toBe(5);
     expect(lineItem.status).toBe(LineItemStatus.PARTIALLY_FULFILLED);
     expect(po.status).toBe(PurchaseOrderStatus.PARTIALLY_FULFILLED);
     const stock = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock).toBeDefined();
-    expect(stock?.deliveredQuantity).toBe(5);
-    const delivery2 = new Delivery("line-item-id", date, comment, 5);
+    expect(stock!.deliveredQuantity.value).toBe(5);
+    const delivery2 = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
     po.receiveDelivery("line-item-id", delivery2, mockInventoryService);
     const stock2 = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock2).toBeDefined();
-    expect(stock2?.deliveredQuantity).toBe(10);
+    expect(stock2?.deliveredQuantity.value).toBe(10);
 
   });
 
   it("should mark line item and PO as fully delivered when quantity matches", () => {
-    const delivery = new Delivery("line-item-id", date, comment, 10);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(10, "pcs"),);
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
 
@@ -95,7 +96,7 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should throw error if receiving delivery in invalid PO status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, 5);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.DRAFT, [lineItem]);
 
@@ -105,7 +106,7 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should throw error if receiving delivery in invalid line item status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, 5);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
     const lineItem = createTestLineItem();
     const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem, line2]);

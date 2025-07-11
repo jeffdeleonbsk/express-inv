@@ -1,0 +1,23 @@
+import Database from "better-sqlite3";
+import { IEmailDuplicateService } from "../users/iEmailDuplicateService";
+
+interface IUserCnt {
+    cnt: number;
+} 
+export class EmailDuplicateService implements IEmailDuplicateService
+{
+    private getStmt: any;
+    private db:any;
+
+    public constructor() {
+        const dbName = process.env.SQLITE_DB;
+        const db = new Database(dbName);
+        this.getStmt = db.prepare<[string], IUserCnt>("SELECT COUNT(*) as cnt FROM users WHERE email=?");
+        this.db = db;
+    }
+    emailExists(email: string): boolean {
+        const ret = this.getStmt(email);
+        return ret.cnt > 0;
+    }
+
+}

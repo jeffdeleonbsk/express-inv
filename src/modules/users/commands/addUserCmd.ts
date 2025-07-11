@@ -1,7 +1,8 @@
 
-import { BaseCommand } from "../../../common/baseCommand";
-import { IExecutor } from "../../../common/executor";
-import { Result } from "../../../common/result";
+import { BaseCommand } from "../../common/baseCommand";
+import { IExecutor } from "../../common/executor";
+import { Result } from "../../common/result";
+import { IEmailDuplicateService } from "../iEmailDuplicateService";
 
 import { IUserDb } from "../iUserDb";
 import { Role } from "../models/role";
@@ -49,9 +50,11 @@ export class AddUserResponse {
 
 export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
     private db: IUserDb;
-    public constructor(req: AddUserRequest, db: IUserDb, exec: IExecutor<AddUserResponse>) {
+    private emailService: IEmailDuplicateService;
+    public constructor(req: AddUserRequest, db: IUserDb, exec: IExecutor<AddUserResponse>, emailService: IEmailDuplicateService) {
       super(req, exec);
       this.db = db;
+      this.emailService = emailService;
     }
     public async doCommand(): Promise<Result<AddUserResponse>> {
         const usrRet = await this.request.mapRequestToUser(this.db);

@@ -1,4 +1,4 @@
-import { DomainError } from "../../../common/domainError";
+import { DomainError } from "../../common/domainError";
 import { RoleAccess } from "./roleAccess";
 
 // Value Object

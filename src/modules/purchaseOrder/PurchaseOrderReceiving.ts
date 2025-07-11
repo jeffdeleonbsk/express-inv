@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
 import { LineItemStatus, PurchaseOrderStatus } from "../common/enums";
+import { Quantity } from "../common/valueObjects";
 
 export interface IAddToInventoryService {
-  addStock(productId: string, warehouseId: string, deliveredQuantity: number): void;
+  addStock(productId: string, warehouseId: string, deliveredQuantity: Quantity): void;
 }
 
 export class Delivery {
@@ -12,7 +13,7 @@ export class Delivery {
     lineItemId: string;
     dateDelivered: Date;
     deliveryComment: string;
-    deliveredQuantity: number;
+    deliveredQuantity: Quantity;
   }): Delivery {
     return new Delivery(
       params.lineItemId,
@@ -25,7 +26,7 @@ export class Delivery {
     public readonly lineItemId: string,
     public readonly dateDelivered: Date,
     public readonly deliveryComment: string,
-    public readonly deliveredQuantity: number
+    public readonly deliveredQuantity: Quantity
   ) {}
 }
 
@@ -35,9 +36,9 @@ export class ReceivingLineItem {
     id: string;
     productId: string;
     warehouseId: string;
-    orderedQuantity: number;
+    orderedQuantity: Quantity;
     status: LineItemStatus;
-    deliveredQuantity?: number;
+    deliveredQuantity?: Quantity;
     deliveries?: Delivery[];
     dateDelivered?: Date;
     deliveredComment?: string;
@@ -50,7 +51,7 @@ export class ReceivingLineItem {
       params.warehouseId,
       params.orderedQuantity,
       params.status,
-      params.deliveredQuantity ?? 0,
+      params.deliveredQuantity ?? new Quantity(0, "pcs"),
       params.deliveries ?? [],
       params.dateDelivered,
       params.deliveredComment,
@@ -62,9 +63,9 @@ export class ReceivingLineItem {
     public readonly id: string,
     public readonly productId: string,
     public readonly warehouseId: string,
-    public readonly orderedQuantity: number,
+    public readonly orderedQuantity: Quantity,
     public status: LineItemStatus,
-    public deliveredQuantity: number = 0,
+    public deliveredQuantity: Quantity = new Quantity(0, "pcs"),
     public deliveries: Delivery[] = [],
     public dateDelivered?: Date,
     public deliveredComment?: string,
@@ -78,10 +79,10 @@ export class ReceivingLineItem {
     }
 
     this.deliveries.push(delivery);
-    this.deliveredQuantity += delivery.deliveredQuantity;
+    this.deliveredQuantity = new Quantity(this.deliveredQuantity.value + delivery.deliveredQuantity.value, this.deliveredQuantity.unit);
     inventory.addStock(this.productId, this.warehouseId, delivery.deliveredQuantity);
 
-    if (this.deliveredQuantity >= this.orderedQuantity) {
+    if (this.deliveredQuantity.value >= this.orderedQuantity.value) {
       this.status = LineItemStatus.FULLY_DELIVERED;
       this.dateDelivered = delivery.dateDelivered;
       this.deliveredComment = delivery.deliveryComment;

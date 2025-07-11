@@ -3,8 +3,10 @@ import { token } from "brandi";
 import { DefaultExecutorFactory } from "./modules/common/DefaultExecutor";
 import { container, TOKEN_MAP } from "./modules/common/diContainer";
 import { IExecutorFactory } from "./modules/common/executor";
-import { IUserDb } from "./modules/domain/users/iUserDb";
+import { IUserDb } from "./modules/users/iUserDb";
 import { UserDbSqlite } from "./modules/infraSqlite/userDbSqlite";
+import { IEmailDuplicateService } from "./modules/users/iEmailDuplicateService";
+import { EmailDuplicateService } from "./modules/infraSqlite/EmailDuplicateService";
 export function bindToContainer() {
     console.log("Binding in container");
 
@@ -19,5 +21,11 @@ export function bindToContainer() {
         .bind(TOKEN_MAP.get("ExecutorFactory"))
         .toInstance(DefaultExecutorFactory)
         .inTransientScope();
+
+    TOKEN_MAP.set("EmailDuplicateService", token<IEmailDuplicateService>("EmailDuplicateService"));
+    container
+        .bind(TOKEN_MAP.get("EmailDuplicateService"))
+        .toInstance(EmailDuplicateService)
+        .inSingletonScope();        
 
 }

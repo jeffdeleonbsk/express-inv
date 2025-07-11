@@ -1,4 +1,4 @@
-import { DomainError } from "../../../common/domainError";
+import { DomainError } from "../../common/domainError";
 
 // value object
 export interface IRoleAccess {

@@ -1,5 +1,6 @@
 // purchase-order.spec.ts
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
+import { Money, Quantity } from "../modules/domain/common/valueObjects";
 import { PurchaseOrder, PurchaseOrderLineItem } from "../modules/domain/purchaseOrder/PurchaseOrderCreation";
 import { Product, Vendor, Warehouse } from "../modules/domain/purchaseOrder/PurchaseOrderCreation";
 
@@ -18,7 +19,7 @@ describe("PurchaseOrder domain model", () => {
 
   it("should add a line item with correct warehouse-product match", () => {
     const po = new PurchaseOrder(vendor, new Date());
-    const item = new PurchaseOrderLineItem(frozenFish, refrigeratedWarehouse, 10, 200);
+    const item = new PurchaseOrderLineItem(frozenFish, refrigeratedWarehouse, new Quantity(10, "kg"), new Money(200, "PhP"));
     po.addLineItem(item);
     expect(po.lineItems.length).toBe(1);
     expect(item.status).toBe(LineItemStatus.DRAFT);
@@ -27,26 +28,26 @@ describe("PurchaseOrder domain model", () => {
   it("should throw error if product refrigeration doesn't match warehouse", () => {
     let poli = null;
     expect(() => {
-      poli = new PurchaseOrderLineItem(frozenFish, regularWarehouse, 5, 100);
+      poli = new PurchaseOrderLineItem(frozenFish, regularWarehouse, new Quantity(5, "kg"), new Money(100, "PhP"));
     }).toThrow("Product refrigeration requirement does not match warehouse capability.");
     expect(poli).toBeNull();
   });
 
   it("should allow update of warehouse, quantity, and price in DRAFT status", () => {
-    const item = new PurchaseOrderLineItem(rice, regularWarehouse, 10, 50);
+    const item = new PurchaseOrderLineItem(rice, regularWarehouse, new Quantity(10, "50kg sacks"), new Money(50, "PhP"));
     const newWarehouse = new Warehouse("w3", "WH3", "Dry 2", true, false);
     item.updateWarehouse(newWarehouse);
-    item.updateOrderedQuantity(20);
-    item.updateUnitPrice(45);
+    item.updateOrderedQuantity(new Quantity(20, "50kg sacks"));
+    item.updateUnitPrice(new Money(45, "PhP"));
     expect(item.warehouse).toBe(newWarehouse);
-    expect(item.orderedQuantity).toBe(20);
+    expect(item.orderedQuantity.value).toBe(20);
     expect(item.unitPrice).toBe(45);
   });
 
   it("should confirm a DRAFT purchase order with all DRAFT line items", () => {
     const po = new PurchaseOrder(vendor, new Date());
-    const item1 = new PurchaseOrderLineItem(rice, regularWarehouse, 5, 10);
-    const item2 = new PurchaseOrderLineItem(rice, regularWarehouse, 10, 12);
+    const item1 = new PurchaseOrderLineItem(rice, regularWarehouse, new Quantity(5, "50kg sacks")  , new Money(10, "PhP"));
+    const item2 = new PurchaseOrderLineItem(rice, regularWarehouse, new Quantity(10, "50kg sacks"), new Money(12, "PhP"));
     po.addLineItem(item1);
     po.addLineItem(item2);
     po.confirm(new Date(), "Ready to process");
@@ -57,7 +58,7 @@ describe("PurchaseOrder domain model", () => {
 
   it("should cancel a DRAFT purchase order with all DRAFT line items", () => {
     const po = new PurchaseOrder(vendor, new Date());
-    const item = new PurchaseOrderLineItem(rice, regularWarehouse, 5, 10);
+    const item = new PurchaseOrderLineItem(rice, regularWarehouse, new Quantity(5, "50kg sacks"), new Money(10, "PhP"));
     po.addLineItem(item);
     po.cancel(new Date(), "Client cancelled");
     expect(po.status).toBe(PurchaseOrderStatus.DRAFT_CANCELLED);

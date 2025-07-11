@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
-import { IUserDb } from "../domain/users/iUserDb";
-import { Role } from "../domain/users/models/role";
-import { RoleAccess } from "../domain/users/models/roleAccess";
-import { User as DomainUser } from "../domain/users/models/user";
+import { IUserDb } from "../users/iUserDb";
+import { Role } from "../users/models/role";
+import { RoleAccess } from "../users/models/roleAccess";
+import { User as DomainUser } from "../users/models/user";
 
 interface IUser {
     id: string;
