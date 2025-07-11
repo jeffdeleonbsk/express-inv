@@ -32,6 +32,6 @@ export function genericHandleJsonResult<T, U>(
     req: T,
     result: Result<U>
 ): void {
-    response.status(result.isSuccess?200:422).json(result)
+    response.status(result.isSuccess ? 200 : 422).json(result);
 
 }

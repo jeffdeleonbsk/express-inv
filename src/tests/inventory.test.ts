@@ -1,4 +1,4 @@
-import { InventoryEntry, Product, Warehouse } from "../modules/domain/inventory/inventory";
+import { InventoryEntry, Product, Warehouse } from "../modules/inventory/inventory";
 
 describe("Inventory Domain Model", () => {
   const activeWarehouse = new Warehouse("W1", "Main Warehouse", false, true);
@@ -111,6 +111,6 @@ describe("Inventory Domain Model", () => {
       entry.takeStock(5);
       entry.takeStock(6);
       expect(entry.getQuantity()).toBe(1);
-    });    
+    });
   });
 });

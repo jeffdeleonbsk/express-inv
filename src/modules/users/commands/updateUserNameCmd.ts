@@ -24,23 +24,25 @@ export class UpdateUserNameCmd extends BaseCommand<UpdateUserRequest, UpdateUser
       super(req);
       this.db = db;
     }
-    public  async doCommand(): Promise<Result<UpdateUserResponse>> {
+    public async doCommand(): Promise<Result<UpdateUserResponse>> {
         const usr = await this.db.GetUserById(this.request.id, true, false );
         if (usr) {
             usr.updateName(this.request.firstname, this.request.lastname);
-            const ret = await this.db.Update(usr);
-
-            const usrRet = await this.db.GetUserById(this.request.id, false, false );
-            return Result.Ok(new UpdateUserResponse(
-                usr.id, usr.firstname, usr.lastname
-            ));
+            const changed = await this.db.Update(usr);
+            if (changed > 0) {
+                return Result.Ok(new UpdateUserResponse(
+                    usr.id, usr.firstname, usr.lastname
+                ));
+            }
+            return Result.appFailed("Unable to persist updates");
         }
         return Result.domainFailed("Cannot find user");
     }
     protected getValidationRules(): any {
         return {
-          firstname: "required|string|minLength:3",
-          lastname: "required|minLength:3"
+            id: "required",
+            firstname: "required|string|minLength:3",
+            lastname: "required|minLength:3"
         };
     }
 }

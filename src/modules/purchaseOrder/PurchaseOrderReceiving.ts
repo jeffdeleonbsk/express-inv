@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { DomainError } from "../../common/domainError";
-import { LineItemStatus, PurchaseOrderStatus } from "../common/enums";
-import { Quantity } from "../common/valueObjects";
+import { DomainError } from "../common/domainError";
+import { LineItemStatus, PurchaseOrderStatus } from "../domain/common/enums";
+import { Quantity } from "../domain/common/valueObjects";
 
 export interface IAddToInventoryService {
   addStock(productId: string, warehouseId: string, deliveredQuantity: Quantity): void;

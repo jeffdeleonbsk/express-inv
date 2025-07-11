@@ -1,7 +1,7 @@
 import { v4 as uuidv4 } from "uuid";
-import { DomainError } from "../../common/domainError";
-import { LineItemStatus, PurchaseOrderStatus } from "../common/enums";
-import { Money, Quantity } from "../common/valueObjects";
+import { DomainError } from "../common/domainError";
+import { LineItemStatus, PurchaseOrderStatus } from "../domain/common/enums";
+import { Money, Quantity } from "../domain/common/valueObjects";
 // --- Value Objects / Entities ---
 
 export class Vendor {

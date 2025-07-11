@@ -3,5 +3,5 @@ export class Money {
 }
 
 export class Quantity {
-  constructor(public readonly value: number, public readonly unit: string = 'pcs') {}
+  constructor(public readonly value: number, public readonly unit: string = "pcs") {}
 }

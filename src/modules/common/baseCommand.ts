@@ -1,6 +1,6 @@
 import { Validator } from "node-input-validator";
-import { Result } from "./result";
 import { DomainError } from "./domainError";
+import { Result } from "./result";
 
 export abstract class BaseCommand<T extends object, U extends object>  {
     protected request: T;
@@ -27,7 +27,7 @@ export abstract class BaseCommand<T extends object, U extends object>  {
             const err = (e as Error);
             const appErrors =  (err.stack) ? err.stack : err.message;
             return Result.Exception([appErrors], Result.EXCEPTION,   err.message);
-        }        
+        }
 
     }
     public abstract doCommand(): Promise<Result<U>>;

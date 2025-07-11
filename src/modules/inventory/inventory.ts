@@ -19,12 +19,34 @@ export class Warehouse {
     public readonly isActive: boolean
   ) {}
 
-  canStore(product: Product): boolean {
+  public canStore(product: Product): boolean {
     return product.needsRefrigeration === this.isRefrigerated;
   }
 }
 
 export class InventoryEntry {
+
+  public static fromDB(params: {
+    id: string;
+    product: Product;
+    warehouse: Warehouse;
+    quantity: number;
+  }): InventoryEntry {
+    return new InventoryEntry(params.id, params.product, params.warehouse, params.quantity);
+  }
+
+  public static createNew(product: Product, warehouse: Warehouse, initialQuantity: number = 0): InventoryEntry {
+    if (!warehouse.isActive) {
+      throw new Error("Warehouse is not active.");
+    }
+    if (!product.isActive) {
+      throw new Error("Product is not active.");
+    }
+    if (!warehouse.canStore(product)) {
+      throw new Error("Warehouse cannot store this product type.");
+    }
+    return new InventoryEntry(uuidv4(), product, warehouse, initialQuantity);
+  }
   private quantity: number;
 
   private constructor(
@@ -36,19 +58,18 @@ export class InventoryEntry {
     this.quantity = quantity;
   }
 
-  getQuantity(): number {
+  public getQuantity(): number {
     return this.quantity;
   }
 
-  addStock(deliveredQuantity: number): void {
+  public addStock(deliveredQuantity: number): void {
     if (!this.warehouse.isActive) {
       throw new Error("Warehouse is not active.");
-    }    
+    }
     this.quantity += deliveredQuantity;
   }
 
-
-  takeStock(quantityTaken: number): void {
+  public takeStock(quantityTaken: number): void {
     this.ensureSufficientStock(quantityTaken);
     this.quantity -= quantityTaken;
   }
@@ -57,27 +78,5 @@ export class InventoryEntry {
     if (quantityTaken > this.quantity) {
       throw new Error("Not enough stock available.");
     }
-  }
-
-  static fromDB(params: {
-    id: string;
-    product: Product;
-    warehouse: Warehouse;
-    quantity: number;
-  }): InventoryEntry {
-    return new InventoryEntry(params.id, params.product, params.warehouse, params.quantity);
-  }
-
-  static createNew(product: Product, warehouse: Warehouse, initialQuantity: number = 0): InventoryEntry {
-    if (!warehouse.isActive) {
-      throw new Error("Warehouse is not active.");
-    }
-    if (!product.isActive) {
-      throw new Error("Product is not active.");
-    }
-    if (!warehouse.canStore(product)) {
-      throw new Error("Warehouse cannot store this product type.");
-    }    
-    return new InventoryEntry(uuidv4(), product, warehouse, initialQuantity);
   }
 }

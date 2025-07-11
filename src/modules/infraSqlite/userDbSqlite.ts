@@ -1,9 +1,9 @@
 import Database from "better-sqlite3";
-import { IUserDb } from "../users/iUserDb";
+import { stringToUserStatus } from "../domain/common/enums";
 import { Role } from "../users/domain/role";
 import { RoleAccess } from "../users/domain/roleAccess";
 import { User as DomainUser } from "../users/domain/user";
-import { stringToUserStatus } from "../domain/common/enums";
+import { IUserDb } from "../users/iUserDb";
 
 interface IUser {
     id: string;
@@ -33,7 +33,7 @@ interface IRoleAccess {
 export class UserDbSqlite implements IUserDb {
     private db: any;
     private getStmt: any;
-    private getByEmailStmt:any;
+    private getByEmailStmt: any;
     private getAllStmt: any;
     private addStmt: any;
     private updateStmt: any;
@@ -50,13 +50,13 @@ export class UserDbSqlite implements IUserDb {
         const db = new Database(dbName);
         db.pragma("journal_mode = WAL");
         this.addStmt = db.prepare<[string, string, string, string, string, string, string], number>(
-            "INSERT INTO users (id, firstname, lastname, email, password, status, role_code) VALUES (?, ?, ?, ?, ?, ?)"
+            "INSERT INTO users (id, firstname, lastname, email, password, status, role_code) VALUES (?, ?, ?, ?, ?, ?, ?)"
         );
         this.getStmt = db.prepare<[number], IUser>("SELECT * FROM users WHERE id=?");
         this.getByEmailStmt = db.prepare<[string], IUser>("SELECT * FROM users WHERE email=?");
         this.getAllStmt = db.prepare<[], IUser>("SELECT * FROM users");
         this.updateStmt = db.prepare<[string, string, string, string, string, string, string], number>(
-            "Update users SET firstname=?, lastname=?, email=?, password=? status=?, role_code=? WHERE id=?"
+            "Update users SET firstname=?, lastname=?, email=?, password=?, status=?, role_code=? WHERE id=?"
         );
         this.deleteStmt = db.prepare<[number], number>("DELETE FROM users WHERE id=?");
 
@@ -114,7 +114,7 @@ public async GetUserByEmail(
             loadRole ? await this.GetRoleByCode(ret.role_code, loadRoleAccess) : null
         );
         return usr;
-    }    
+    }
 
     public async GetUserById(
         id: string,
@@ -137,6 +137,7 @@ public async GetUserByEmail(
         return this.getAllStmt.all();
     }
     public async Add(usr: DomainUser): Promise<number> {
+        console.log(usr);
         const ret =  this.addStmt.run(usr.id, usr.firstname, usr.lastname, usr.email, usr.password, usr.status, usr.role!.code);
 
         return ret.lastInsertRowid;

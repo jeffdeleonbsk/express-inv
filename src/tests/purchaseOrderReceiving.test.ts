@@ -1,6 +1,6 @@
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
 import { Quantity } from "../modules/domain/common/valueObjects";
-import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/domain/purchaseOrder/PurchaseOrderReceiving";
+import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/purchaseOrder/PurchaseOrderReceiving";
 
 describe("ReceivingPurchaseOrder", () => {
 
@@ -24,7 +24,7 @@ describe("ReceivingPurchaseOrder", () => {
             this.stocks.push({
                 productId,
                 warehouseId,
-                deliveredQuantity:new Quantity(deliveredQuantity.value, deliveredQuantity.unit)
+                deliveredQuantity: new Quantity(deliveredQuantity.value, deliveredQuantity.unit)
             });
         }
     }
@@ -34,7 +34,6 @@ describe("ReceivingPurchaseOrder", () => {
 
   const date = new Date("2025-07-08");
   const comment = "Received partial delivery";
-
 
   const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem =>
     new ReceivingLineItem(
@@ -52,7 +51,7 @@ describe("ReceivingPurchaseOrder", () => {
     );
 
   it("should receive delivery and update statuses", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
 
@@ -64,7 +63,7 @@ describe("ReceivingPurchaseOrder", () => {
     const stock = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock).toBeDefined();
     expect(stock!.deliveredQuantity.value).toBe(5);
-    const delivery2 = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
+    const delivery2 = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
     po.receiveDelivery("line-item-id", delivery2, mockInventoryService);
     const stock2 = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock2).toBeDefined();
@@ -73,7 +72,7 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should mark line item and PO as fully delivered when quantity matches", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(10, "pcs"),);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(10, "pcs"), );
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
 
@@ -96,7 +95,7 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should throw error if receiving delivery in invalid PO status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.DRAFT, [lineItem]);
 
@@ -106,7 +105,7 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should throw error if receiving delivery in invalid line item status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"),);
+    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
     const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
     const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem, line2]);

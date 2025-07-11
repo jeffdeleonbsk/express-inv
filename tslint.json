@@ -14,7 +14,8 @@
       "ban-keywords",
       "check-format",
       "allow-leading-underscore"
-    ] 
+    ],
+    "max-line-length": [false] 
   },
   "rulesDirectory" : []
 }

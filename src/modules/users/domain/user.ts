@@ -1,12 +1,12 @@
+import * as bcrypt from "bcrypt";
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
 import { Result } from "../../common/result";
+import { UserStatus } from "../../domain/common/enums";
+import { IEmailExistsService } from "../../domain/interfaces/iEmailExistsService";
 import { Role } from "./role";
 import { RoleAccess } from "./roleAccess";
 import { RoleResource } from "./roleResource";
-import { IEmailExistsService } from "./iEmailExistsService";
-import { UserStatus } from "../../domain/common/enums";
-import * as bcrypt from 'bcrypt';
 
 // Aggregate Root
 export class User {
@@ -31,7 +31,7 @@ export class User {
     public get role(): Role | null {
         return this._role;
     }
-    public static createNew(
+    public static async createNew(
         firstname: string,
         lastname: string,
         email: string,
@@ -39,15 +39,16 @@ export class User {
         status: UserStatus,
         role: Role|null,
         emailService: IEmailExistsService
-    ): Result<User> {
+    ): Promise<Result<User>> {
         if (emailService.emailExists(email)) {
-            return Result.domainFailed( `Email {$email} already exists` );
+            return Result.domainFailed( `Email ${email} already exists` );
         }
         if (role === null) {
             return Result.domainFailed( "Please set the role for this user");
         }
+        const hash = await bcrypt.hash(password, 10);
         const user = new User(
-            uuidv4(), firstname, lastname, email, password, status, role
+            uuidv4(), firstname, lastname, email, hash, status, role
         );
         return Result.Ok(user);
     }
@@ -102,7 +103,8 @@ export class User {
         this._firstname = firstName;
         this._lastname = lastName;
     }
-    public async updatePassword(oldPass: string, newPass: string, confirmNewPass: string) : Promise<void>{
+
+    public async updatePassword(oldPass: string, newPass: string, confirmNewPass: string): Promise<void> {
         if (this.isActive() === false) {
             throw new DomainError("Cannot edit inactive user");
         }
@@ -114,13 +116,13 @@ export class User {
             throw new DomainError("Must provide correct old password");
         }
         this._password = await bcrypt.hash(newPass, 10);
-    }    
-    public async checkPassword(password: string): Promise<boolean>{
+    }
+    public async checkPassword(password: string): Promise<boolean> {
         if (this.isActive() === false) {
             throw new DomainError("Cannot edit inactive user");
         }
         return await bcrypt.compare(password, this._password);
-    }     
+    }
     private getAccess(resourceCode: string): RoleAccess|undefined {
         if (this._role) {
             return this._role.getRoleAccess(resourceCode);

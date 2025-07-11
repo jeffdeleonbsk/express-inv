@@ -1,20 +1,18 @@
 
 import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
-import { IEmailExistsService } from "../domain/iEmailExistsService";
+import { IEmailExistsService } from "../../domain/interfaces/iEmailExistsService";
 
-import { IUserDb } from "../iUserDb";
+import { UserStatus } from "../../domain/common/enums";
 import { Role } from "../domain/role";
 import { User } from "../domain/user";
-import { getInstance } from "../../common/diContainer";
-import { UserStatus } from "../../domain/common/enums";
+import { IUserDb } from "../iUserDb";
 
 export class AddUserRequest {
     public constructor(
         public firstname: string,
         public lastname: string,
         public email: string,
-        public password: string,
         public status?: UserStatus|null,
         public roleCode?: string
     ) {
@@ -50,28 +48,14 @@ export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
         this.db = db;
         this.emailService = emailService;
     }
-    private async mapRequestToUser(req: AddUserRequest, db: IUserDb): Promise<Result<User>> {
-        const status = req.status?req.status:UserStatus.INACTIVE;
-        const role = req.roleCode?req.roleCode: "";
-        return  User.createNew(
-            req.firstname,
-            req.lastname,
-            req.email,
-            req.password,
-            status,
-            await db.GetRoleByCode(role, true),
-            this.emailService
-        );
-    }
     public async doCommand(): Promise<Result<AddUserResponse>> {
-        const usrRet = await this.mapRequestToUser(this.request,this.db);
+        const usrRet = await this.mapRequestToUser(this.request, this.db);
         if (usrRet.isSuccess === false) {
             return usrRet;
         }
         const ret = await this.db.Add(usrRet.result);
-        const usrAdd = await this.db.GetUserById(usrRet.result.id, true, false);
-        if (usrAdd) {
-            return Result.Ok(AddUserResponse.mapFromUser(usrAdd));
+        if (ret > 0) {
+            return Result.Ok(AddUserResponse.mapFromUser(usrRet.result));
         }
         return Result.domainFailed("Unable to retrieve the inserted User");
     }
@@ -81,5 +65,19 @@ export class AddUserCmd extends BaseCommand<AddUserRequest, AddUserResponse> {
           firstname: "required|string|minLength:3",
           lastname: "required|minLength:3"
         };
+    }
+    private async mapRequestToUser(req: AddUserRequest, db: IUserDb): Promise<Result<User>> {
+        const status = req.status ? req.status : UserStatus.INACTIVE;
+        const role = req.roleCode ? req.roleCode : "";
+        const initialPassword = "abc123";
+        return  await User.createNew(
+            req.firstname,
+            req.lastname,
+            req.email,
+            initialPassword,
+            status,
+            await db.GetRoleByCode(role, true),
+            this.emailService
+        );
     }
 }
