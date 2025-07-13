@@ -14,8 +14,8 @@ const insertUserStmt = db.prepare<[string, string, string, string, string, strin
 
 bcrypt.hash("abc123", 10).then((hash) => {
 insertUserStmt.run(uuidv4(), "Admin Jeff", "de Leon ", "jeffdeleonbsk+admin@gmail.com", hash,  "ACTIVE", "ADMIN");
-insertUserStmt.run(uuidv4(), "Encoder Jeff", "de Leon ", "jeffdeleonbsk+admin@gmail.com", hash, "ACTIVE", "ENCODER");
-insertUserStmt.run(uuidv4(), "PO Admin Jeff", "de Leon ", "jeffdeleonbsk+admin@gmail.com", hash, "ACTIVE", "PO_ADMIN");
+insertUserStmt.run(uuidv4(), "Encoder Jeff", "de Leon ", "jeffdeleonbsk+encoder@gmail.com", hash, "ACTIVE", "ENCODER");
+insertUserStmt.run(uuidv4(), "PO Admin Jeff", "de Leon ", "jeffdeleonbsk+poadmin@gmail.com", hash, "ACTIVE", "PO_ADMIN");
 
 });
 
