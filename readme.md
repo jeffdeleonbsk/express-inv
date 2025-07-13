@@ -28,7 +28,7 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
 **Navigate the Domain:**
 - Purchase Order models: [`src/modules/purchaseOrder/models/PurchaseOrderCreation.ts`](src/modules/purchaseOrder/models/PurchaseOrderCreation.ts), [`PurchaseOrderReceiving.ts`](src/modules/purchaseOrder/models/PurchaseOrderReceiving.ts), [`PurchaseOrderLineItem.ts`](src/modules/purchaseOrder/models/PurchaseOrderLineItem.ts)
 - Inventory models: [`src/modules/inventory/models/inventory.ts`](src/modules/inventory/models/inventory.ts)
-- Value Objects: [`src/modules/purchaseOrder/models/valueObjects.ts`](src/modules/purchaseOrder/models/valueObjects.ts), [`src/modules/inventory/models/quantity.ts`](src/modules/inventory/models/quantity.ts)
+- Value Objects: [`src/modules/domain/common/genericValueObjects.ts`](src/modules/domain/common/genericValueObjects.ts), [`src/modules/domain/common/domainValueObjects.ts`](src/modules/domain/common/domainValueObjects.ts)
 
 ---
 
