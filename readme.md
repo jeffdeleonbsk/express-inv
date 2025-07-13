@@ -1,11 +1,12 @@
 # Express Inventory & Purchase Order System (TypeScript, DDD)
 
 ## Overview
-This project is an exercise in using **Domain Driven Design (DDD)** to create a simple but non-trivial application. The chosen problem is making purchase orders for an inventory system. The intent is not to create a full featured system. Rather, the intent is to show how to create an application following **Domain Driven Design (DDD)** principles in Typescript. It demonstrates how to structure a real-world Node.js application using DDD, CQRS, and strong typing, with a focus on maintainability, testability, and clear separation of concerns.
+This project is an exercise in using **Domain Driven Design (DDD)** to create a simple but non-trivial application. The chosen problem is making purchase orders for an inventory system. The intent is not to create a full featured system. Rather, the intent is to show how to create an application following **Domain Driven Design (DDD)** principles in Typescript. It demonstrates how to structure a real-world Node.js application using DDD, CQRS, and strong typing, Inversion of Control(Dependency Inversion), with a focus on maintainability, testability, and clear separation of concerns.
 
 - **Database:** SQLite (via better-sqlite3)
 - **Authentication:** JWT
 - **Testing:** Jest
+- **IoC Container:** Brandi
 - **Patterns:** DDD, CQRS, Command Pattern, Repository Pattern, Value Objects, Entities
 
 ---
@@ -14,6 +15,7 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
 - User, Role, and Access Management
 - Purchase Order lifecycle: Create, Confirm, Add/Remove Line Items, Cancel, Receive Delivery, Close
 - Inventory management: Add to stock, Take from stock
+- IoC using Brandi. 
 - Modular, testable, and extensible codebase
 
 ---
@@ -25,10 +27,20 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
 - **Value Objects** and **Entities** are used throughout the domain layer.
 - **CQRS**: Commands are separated from queries, and all state changes go through command handlers.
 
+
 **Navigate the Domain:**
 - Purchase Order models: [`src/modules/purchaseOrder/models/PurchaseOrderCreation.ts`](src/modules/purchaseOrder/models/PurchaseOrderCreation.ts), [`PurchaseOrderReceiving.ts`](src/modules/purchaseOrder/models/PurchaseOrderReceiving.ts), [`PurchaseOrderLineItem.ts`](src/modules/purchaseOrder/models/PurchaseOrderLineItem.ts)
 - Inventory models: [`src/modules/inventory/models/inventory.ts`](src/modules/inventory/models/inventory.ts)
 - Value Objects: [`src/modules/domain/common/genericValueObjects.ts`](src/modules/domain/common/genericValueObjects.ts), [`src/modules/domain/common/domainValueObjects.ts`](src/modules/domain/common/domainValueObjects.ts)
+
+---
+
+**Navigate the App Layer:**
+- API routes: [`src/app/routes`](src/app/routes)
+- IoC Service/Repository Binding: [`src/app/bindToContainer.ts`](src/app/bindToContainer.ts), [`src/app/common/tokenMap.ts`](src/app/common/tokenMap.ts), [`src/app/common/diContainer.ts`](src/app/common/diContainer.ts)
+- Middlewares: [`src/app/middlewares`](src/app/middlewares)
+- Repository Implementations (SQLite): [`src/app/infrastructure/sqlite`](src/app/infrastructure/sqlite)
+- Service Implementations: [`src/app/infrastructure/services`](src/app/infrastructure/services)
 
 ---
 

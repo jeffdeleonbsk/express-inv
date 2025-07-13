@@ -1,8 +1,8 @@
 import Database from "better-sqlite3";
 import { Product, Warehouse } from "../../../modules/domain/common/domainValueObjects";
+import { Quantity } from "../../../modules/domain/common/genericValueObjects";
 import { IInventoryDb } from "../../../modules/inventory/iInventoryDb";
 import { InventoryEntry } from "../../../modules/inventory/models/inventory";
-import { Quantity } from "../../../modules/domain/common/genericValueObjects";
 
 export class InventoryDbSqlite implements IInventoryDb {
     private db: any;
@@ -27,7 +27,7 @@ export class InventoryDbSqlite implements IInventoryDb {
             id: row.id,
             product: product!,
             warehouse: warehouse!,
-            quantity: quantity
+            quantity
         });
     }
 

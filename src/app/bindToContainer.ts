@@ -1,7 +1,7 @@
 
 import { container } from "./common/diContainer";
 import TokenMap from "./common/tokenMap";
-import { AuthService } from "./infrastructure/jwt/authService";
+import { AuthService } from "./infrastructure/services/authService";
 import { InventoryAddService } from "./infrastructure/services/InventoryAddService";
 import { AuthDbSqlite } from "./infrastructure/sqlite/authDbSqlite";
 import { EmailExistsService } from "./infrastructure/sqlite/EmailExistsService";
