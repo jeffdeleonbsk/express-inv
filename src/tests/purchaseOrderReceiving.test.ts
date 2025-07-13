@@ -1,6 +1,7 @@
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
 import { Quantity } from "../modules/domain/common/valueObjects";
-import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/purchaseOrder/PurchaseOrderReceiving";
+import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderReceiving";
+import { Product, Warehouse } from "../modules/purchaseOrder/models/valueObjects";
 
 describe("ReceivingPurchaseOrder", () => {
 
@@ -35,25 +36,33 @@ describe("ReceivingPurchaseOrder", () => {
   const date = new Date("2025-07-08");
   const comment = "Received partial delivery";
 
-  const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem =>
-    new ReceivingLineItem(
+  const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem => {
+    const product = Product.fromDb(productId, productId, "Test Product", true, false);
+    const warehouse = Warehouse.fromDb(warehouseId, warehouseId, "Test Warehouse", true, false);
+    return ReceivingLineItem.fromDB({
       id,
-      productId,
-      warehouseId,
-      new Quantity(10, "pcs"),
-      LineItemStatus.CONFIRMED,
-      new Quantity(0, "pcs"),
-      [],
-      undefined,
-      undefined,
-      undefined,
-      undefined
-    );
+      product,
+      warehouse,
+      orderedQuantity: new Quantity(10, "pcs"),
+      status: LineItemStatus.CONFIRMED,
+      deliveredQuantity: new Quantity(0, "pcs"),
+      deliveries: [],
+      dateDelivered: undefined,
+      deliveredComment: undefined,
+      dateCancelled: undefined,
+      cancelledComment: undefined
+    });
+  };
 
   it("should receive delivery and update statuses", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
+    const delivery = Delivery.createNew( "line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
-    const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
+    const po = ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.CONFIRMED,
+          lineItems: [lineItem],
+          dateConfirmed: new Date("2025-07-01")
+    });
 
     po.receiveDelivery("line-item-id", delivery, mockInventoryService);
 
@@ -63,7 +72,7 @@ describe("ReceivingPurchaseOrder", () => {
     const stock = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock).toBeDefined();
     expect(stock!.deliveredQuantity.value).toBe(5);
-    const delivery2 = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
+    const delivery2 = Delivery.createNew("line-item-id", date, comment, new Quantity(5, "pcs"), );
     po.receiveDelivery("line-item-id", delivery2, mockInventoryService);
     const stock2 = mockInventoryService.find("product-1", "warehouse-1");
     expect(stock2).toBeDefined();
@@ -72,10 +81,14 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should mark line item and PO as fully delivered when quantity matches", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(10, "pcs"), );
+    const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(10, "pcs"), );
     const lineItem = createTestLineItem();
-    const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
-
+    const po = ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.CONFIRMED,
+          lineItems: [lineItem],
+          dateConfirmed: new Date("2025-07-01")
+    });
     po.receiveDelivery("line-item-id", delivery, mockInventoryService);
 
     expect(lineItem.status).toBe(LineItemStatus.FULLY_DELIVERED);
@@ -86,7 +99,12 @@ describe("ReceivingPurchaseOrder", () => {
 
   it("should cancel line item and update PO status if all cancelled", () => {
     const lineItem = createTestLineItem();
-    const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem]);
+    const po = ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.CONFIRMED,
+          lineItems: [lineItem],
+          dateConfirmed: new Date("2025-07-01")
+    });
 
     po.cancelLineItem("line-item-id", date, comment);
 
@@ -95,22 +113,51 @@ describe("ReceivingPurchaseOrder", () => {
   });
 
   it("should throw error if receiving delivery in invalid PO status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
+    const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
-    const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.DRAFT, [lineItem]);
+    const po =  ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.DRAFT_CANCELLED,
+          lineItems: [lineItem],
+          dateConfirmed: undefined
+    });
 
     expect(() => po.receiveDelivery("line-item-id", delivery, mockInventoryService)).toThrow(
       "Purchase order is not in a receivable state."
     );
   });
 
-  it("should throw error if receiving delivery in invalid line item status", () => {
-    const delivery = new Delivery("line-item-id", date, comment, new Quantity(5, "pcs"), );
+  it("should throw error if receiving delivery in invalid PO status", () => {
     const lineItem = createTestLineItem();
     const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
-    const po = new ReceivingPurchaseOrder("po-1", PurchaseOrderStatus.CONFIRMED, [lineItem, line2]);
+    const po = ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.CONFIRMED,
+          lineItems: [lineItem],
+          dateConfirmed: new Date("2025-07-01")
+    });
 
     po.cancelLineItem("line-item-id", new Date(), "cancelled for test");
+    // since there is only one line item and it is cancelled, the PO should also be already cancelled
+    expect(po.status).toBe(PurchaseOrderStatus.ORDER_CANCELLED);
+    const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(5, "pcs"), );
+    expect(() => po.receiveDelivery("line-item-id", delivery, mockInventoryService)).toThrow(
+      "Purchase order is not in a receivable state."
+    );
+  });
+  it("should throw error if receiving delivery in invalid line item status", () => {
+    const lineItem = createTestLineItem();
+    const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
+    const po = ReceivingPurchaseOrder.fromDB({
+          id: "po-1",
+          status: PurchaseOrderStatus.CONFIRMED,
+          lineItems: [lineItem, line2],
+          dateConfirmed: new Date("2025-07-01")
+    });
+
+    po.cancelLineItem("line-item-id", new Date(), "cancelled for test");
+    expect(po.status).toBe(PurchaseOrderStatus.CONFIRMED);
+    const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(5, "pcs"), );
     expect(() => po.receiveDelivery("line-item-id", delivery, mockInventoryService)).toThrow(
       "Cannot receive delivery in current line item status."
     );

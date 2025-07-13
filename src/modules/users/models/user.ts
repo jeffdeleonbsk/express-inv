@@ -65,12 +65,12 @@ export class User {
     public activateUser(): void {
         if (this.isActive() === false) {
             this._status = UserStatus.ACTIVE;
-        } 
+        }
     }
     public deactivateUser(): void {
         if (this.isActive() === true) {
             this._status = UserStatus.INACTIVE;
-        } 
+        }
     }
     public updateName(firstName: string, lastName: string) {
         if (this.isActive() === false) {

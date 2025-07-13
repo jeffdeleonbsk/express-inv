@@ -4,6 +4,7 @@ import TokenMap from "./common/tokenMap";
 import { AuthService } from "./infrastructure/jwt/authService";
 import { AuthDbSqlite } from "./infrastructure/sqlite/authDbSqlite";
 import { EmailExistsService } from "./infrastructure/sqlite/EmailExistsService";
+import { PurchaseOrderDbSqlite } from "./infrastructure/sqlite/purchaseOrderDbSqlite";
 import { UserDbSqlite } from "./infrastructure/sqlite/userDbSqlite";
 
 export function bindToContainer() {
@@ -23,6 +24,10 @@ export function bindToContainer() {
     container
         .bind(TokenMap.authDb)
         .toInstance(AuthDbSqlite)
+        .inSingletonScope();
+    container
+        .bind(TokenMap.purchaseOrderDb)
+        .toInstance(PurchaseOrderDbSqlite)
         .inSingletonScope();
 
 }
