@@ -1,0 +1,413 @@
+type: collection.insomnia.rest/5.0
+name: My first collection
+meta:
+  id: wrk_ce353f5a9d864d73ae0f451346f5ce2c
+  created: 1751723912784
+  modified: 1751723912784
+  description: ""
+collection:
+  - url: http://127.0.0.1:3000/api/users/bb199067-c5c5-42f5-9c09-2c4d4723ced1/update-names
+    name: "User-Update names "
+    meta:
+      id: req_21367551215048da98c102a3d8d013da
+      created: 1751723912864
+      modified: 1752393882877
+      isPrivate: false
+      description: ""
+      sortKey: -1751723912864
+    method: PUT
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"firstname": "getsdfsdfh",
+        	"lastname": "asdfghj"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      prefix: "Bearer "
+      token: "{{ _.jwt_token }}"
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/users
+    name: User-Add New
+    meta:
+      id: req_2dfe8c0fe94b474bbf9ae96a9442bfb4
+      created: 1751749269072
+      modified: 1752393860160
+      isPrivate: false
+      description: ""
+      sortKey: -1751749269072
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"firstname": "bag2",
+        	"lastname": "asdfghj",
+        	"email": "jeffdeleonbsk+24@gmail.com",
+        	"status": "INACTIVE",
+        	"role": "ADMIN"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/auth/login
+    name: Login
+    meta:
+      id: req_4afff6ff53b74342a8bfcf990712c6e4
+      created: 1752227686078
+      modified: 1752393457489
+      isPrivate: false
+      description: ""
+      sortKey: -1752227686078
+    method: POST
+    body:
+      mimeType: application/json
+      text: |-
+        {
+        	"email": "jeffdeleonbsk+admin@gmail.com",
+        	"password": "abc123"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/users/e1e849d4-9fff-48bc-befe-cfe1e92edfcd
+    name: User-Get
+    meta:
+      id: req_e110562fb3fb44738ef0ed8c79fc96ff
+      created: 1752236106511
+      modified: 1752393869543
+      isPrivate: false
+      description: ""
+      sortKey: -1751736590968
+    method: GET
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"firstname": "bag2",
+        	"lastname": "asdfghj",
+        	"email": "jeffdeleonbsk+2@gmail.com",
+        	"status": "INACTIVE",
+        	"role": "ADMIN"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      token: "{{ _.jwt_token }}"
+      prefix: "Bearer "
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/users/1fb789a7-4e25-42b7-87dc-c674aa0621bd/activate
+    name: User-Activate
+    meta:
+      id: req_d0a1d1f9cda6451ebd26dff5feba6a70
+      created: 1752244687890
+      modified: 1752393894869
+      isPrivate: false
+      description: ""
+      sortKey: -1751723911715.5
+    method: PUT
+    body:
+      mimeType: application/json
+      text: ""
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/users/1fb789a7-4e25-42b7-87dc-c674aa0621bd/deactivate
+    name: User-Deactivate
+    meta:
+      id: req_d550a8f595734dc6a02dbd1c5e734d8b
+      created: 1752244910804
+      modified: 1752393906101
+      isPrivate: false
+      description: ""
+      sortKey: -1751723911141.25
+    method: PUT
+    body:
+      mimeType: application/json
+      text: ""
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      prefix: "Bearer "
+      token: "{{ _.jwt_token }}"
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/purchase-orders/add-line-item
+    name: PO-Add line
+    meta:
+      id: req_71d2060543094467a4134e3b065a583f
+      created: 1752393685431
+      modified: 1752419356952
+      isPrivate: false
+      description: ""
+      sortKey: -1751742930020
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        "purchaseOrderId": "{{ _.po_id }}",
+        "productId": "0f90c4c1-937d-491e-b087-a335ef6ec8bb",	
+        	"warehouseId": "2e4860d3-72db-4192-972f-c5328348d49c",
+        	"orderedQuantity": 20,
+        	"orderedQuantityUnit": "pcs",
+        	"unitPrice": 1000,
+        	"unitPriceCurrency": "Php"
+        	
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/purchase-orders
+    name: PO-Add new
+    meta:
+      id: req_826edb6b9e25441a914f78b746ee1169
+      created: 1752394061268
+      modified: 1752395627605
+      isPrivate: false
+      description: ""
+      sortKey: -1751739760494
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"vendorId": "f1bf63a5-833d-4aa2-916d-69603396767c",
+        	"date": "2025-07-01"
+        	
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/purchase-orders/cancel
+    name: PO-Cancel Draft
+    meta:
+      id: req_6e477edf2e3b43b28f2245205996dc9c
+      created: 1752394379719
+      modified: 1752401816928
+      isPrivate: false
+      description: ""
+      sortKey: -1751738175731
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"purchaseOrderId": "{{ _.po_id }}",
+        	"date": "2025-07-01",
+        	"comment": "walaaaaa"
+        	
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/purchase-orders/confirm
+    name: PO-Confirm Draft
+    meta:
+      id: req_b647320c35ce455b92e9ff2ddc6ecc37
+      created: 1752401833978
+      modified: 1752401870960
+      isPrivate: false
+      description: ""
+      sortKey: -1751737383349.5
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"purchaseOrderId": "{{ _.po_id }}",
+        	"date": "2025-07-13",
+        	"comment": "AYUS"
+        	
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+  - url: http://127.0.0.1:3000/api/purchase-orders/receive-delivery
+    name: PO-Receive Delivery
+    meta:
+      id: req_998670732bf141d381b4f414e8c07888
+      created: 1752401919290
+      modified: 1752419399788
+      isPrivate: false
+      description: ""
+      sortKey: -1751736987158.75
+    method: POST
+    body:
+      mimeType: application/json
+      text: |
+        {
+        	"receivingPurchaseOrderId": "{{ _.po_id }}",
+        	"lineItemId": "426de1d6-fecb-4f02-8dcc-3fcd0b63be6c",
+        	"deliveredQuantity": 4,
+        	"deliveredQuantityUnit": "pcs",
+        	"dateDelivered": "2025-07-14",
+        	"comment": "Ayan na"
+        }
+    headers:
+      - name: Content-Type
+        value: application/json
+      - name: User-Agent
+        value: insomnia/11.2.0
+    authentication:
+      type: bearer
+      disabled: false
+      token: "{{ _.jwt_token }}"
+      prefix: Bearer
+    settings:
+      renderRequestBody: true
+      encodeUrl: true
+      followRedirects: global
+      cookies:
+        send: true
+        store: true
+      rebuildPath: true
+cookieJar:
+  name: Default Jar
+  meta:
+    id: jar_5fca390889c045030ca3c91f4d014c59c7691e41
+    created: 1751723912790
+    modified: 1751723912790
+environments:
+  name: Base Environment
+  meta:
+    id: env_5fca390889c045030ca3c91f4d014c59c7691e41
+    created: 1751723912787
+    modified: 1752443574817
+    isPrivate: false
+  data:
+    jwt_token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOiJlMWU4NDlkNC05ZmZmLTQ4YmMtYmVmZS1jZmUxZTkyZWRmY2QiLCJ1c2VybmFtZSI6ImplZmZkZWxlb25ic2srYWRtaW5AZ21haWwuY29tIiwiaWF0IjoxNzUyNDQzNTIxLCJleHAiOjE3NTI0Nzk1MjF9.LRoeDKCyAJf-uCSujUKcpjS0dYeKiXRyLi1Mm3zM7N8
+    po_id: a773ad27-af5b-4f99-ba56-2033783a1fab

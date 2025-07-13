@@ -103,6 +103,10 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
    or 
    npx jest src/tests
    ```
+5. **Test Endpoints:**   
+   Open generated .sqlite file in HeidiSQL or other sql clients that can read sqlite files
+   you need this to get the id's for testing
+   import included insomnia collection file and start testing
 
 ---
 
