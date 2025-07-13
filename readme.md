@@ -95,7 +95,7 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
    ```
 4. **Start the server:**
    ```sh
-   npm run dev
+   npm run watch
    ```
 5. **Run tests:**
    ```sh
