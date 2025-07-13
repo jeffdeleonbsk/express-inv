@@ -110,3 +110,19 @@ create a better-sqlite3 implementation of IInventoryDb
 in src/modules/inventory/iInventoryDb.ts
 create it in src/app/infrastructure/sqlite/InventoryDbSqlite.ts
 use src/app/infrastructure/sqlite/purchaseOrderDbSqlite.ts as reference
+
+create new file src/modules/inventory/commands/addToStock.ts
+in the file src/modules/inventory/commands/addToStock.ts
+create a command for Adding to inventory,
+use the function addStock of InventoryEntry 
+from src/modules/inventory/models/inventory.ts
+use the file src/modules/purchaseOrder/commands/cancelConfirmedOrder.ts as reference
+in the request object, use only id's and not the objects as inputs
+
+create new file src/modules/inventory/commands/takeFromStock.ts
+in the file src/modules/inventory/commands/takeFromStock.ts
+create a command for taking from inventory,
+use the function takeStock of InventoryEntry 
+from src/modules/inventory/models/inventory.ts
+use the file src/modules/inventory/commands/addToStock.ts as reference
+in the request object, use only id's and not the objects as inputs

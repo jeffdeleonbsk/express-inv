@@ -1,9 +1,9 @@
 import Database from "better-sqlite3";
+import { Product, Vendor, Warehouse } from "../../../modules/domain/common/domainValueObjects";
 import { Money, Quantity } from "../../../modules/domain/common/genericValueObjects";
 import { IPurchaseOrderDb } from "../../../modules/purchaseOrder/iPurchaseOrderDb";
 import { PurchaseOrder, PurchaseOrderLineItem } from "../../../modules/purchaseOrder/models/PurchaseOrderCreation";
 import { Delivery, ReceivingLineItem, ReceivingPurchaseOrder } from "../../../modules/purchaseOrder/models/PurchaseOrderReceiving";
-import { Product, Vendor, Warehouse } from "../../../modules/domain/common/domainValueObjects";
 
 export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
     private db: any;
@@ -46,7 +46,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
 
         const stmt = this.db.prepare(
             `INSERT INTO purchase_orders (id, vendor_id, owner_id, status, date_created, date_confirmed, date_cancelled, date_delivered, date_closed, delivered_comment, cancelled_comment, closed_comment, confirmed_comment, created_comment)
-             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`     
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
         );
         const params = [
             po.id,
@@ -77,9 +77,9 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
         if (lineItem.isDeleted === true) {
             const stmt = this.db.prepare(
                 `DELETE FROM purchase_order_line_items WHERE id = ?`
-            );  
+            );
             const result = stmt.run(lineItem.id);
-            return result.changes; 
+            return result.changes;
         }
 
         if (lineItem.isNew === true) {
@@ -99,13 +99,13 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
                 new Date().toISOString()
             ];
             const result = stmt.run(...params);
-            return result.changes; 
+            return result.changes;
         }
         if (lineItem.isDirty === true) {
             // update the line item
             const stmt = this.db.prepare(
                 `UPDATE purchase_order_line_items
-                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?, ordered_quantity_unit = ?, unit_price = ?, status = ?, 
+                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?, ordered_quantity_unit = ?, unit_price = ?, status = ?,
                  date_confirmed = ?, date_cancelled = ?, confirmed_comment = ?, cancelled_comment = ?
 
                  WHERE id = ?`
@@ -128,7 +128,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
         }
 
         return 0;
-    }    
+    }
     public async updatePO(po: PurchaseOrder): Promise<number> {
         for (const item of po.lineItems) {
             await this.processLineItem(item, po.id);
@@ -203,7 +203,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
                 `DELETE FROM deliveries WHERE id = ?`
             );
             const result = stmt.run(delivery.id);
-            return result.changes; 
+            return result.changes;
         }
         if (delivery.isNew === true) {
             const stmt = this.db.prepare(
@@ -219,7 +219,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
                 delivery.deliveredQuantity.unit
             ];
             const result = stmt.run(...params);
-            return result.changes; 
+            return result.changes;
         }
         if (delivery.isDirty === true) {
             const stmt = this.db.prepare(
@@ -241,22 +241,22 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
     }
     public async processReceivingLineItem(lineItem: ReceivingLineItem, poid: string): Promise<number> {
         for (const delivery of lineItem.deliveries) {
-            await this.processDelivery(delivery, lineItem.id);  
+            await this.processDelivery(delivery, lineItem.id);
         }
         if (lineItem.isDeleted === true) {
             const stmt = this.db.prepare(
                 `DELETE FROM purchase_order_line_items WHERE id = ?`
-            );  
+            );
             const result = stmt.run(lineItem.id);
-            return result.changes; 
+            return result.changes;
         }
 
         if (lineItem.isDirty === true) {
             // update the line item
             const stmt = this.db.prepare(
                 `UPDATE purchase_order_line_items
-                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?, 
-                 ordered_quantity_unit = ?, status = ?, date_cancelled = ?, 
+                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?,
+                 ordered_quantity_unit = ?, status = ?, date_cancelled = ?,
                  date_delivered = ?, delivered_comment = ?,
                  delivered_quantity = ?, delivered_quantity_unit = ?,
                  cancelled_comment = ?
@@ -282,7 +282,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
 
         return 0;
     }
-    
+
     public async updateReceiving(po: ReceivingPurchaseOrder): Promise<number> {
         for (const item of po.lineItems) {
             await this.processReceivingLineItem(item, po.id);

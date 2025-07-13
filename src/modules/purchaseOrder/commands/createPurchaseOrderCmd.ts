@@ -1,9 +1,9 @@
 import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
-import { PurchaseOrder} from "../models/PurchaseOrderCreation";
-import { Vendor, Warehouse, Product } from "../../domain/common/domainValueObjects";
-import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
+import { Product, Vendor, Warehouse } from "../../domain/common/domainValueObjects";
 import { Money, Quantity } from "../../domain/common/genericValueObjects";
+import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
+import { PurchaseOrder} from "../models/PurchaseOrderCreation";
 
 export class CreatePurchaseOrderRequest {
     constructor(
@@ -15,7 +15,7 @@ export class CreatePurchaseOrderRequest {
 }
 
 export class CreatePurchaseOrderResponse {
-    static mapFromPO(po: PurchaseOrder): CreatePurchaseOrderResponse {
+    public static mapFromPO(po: PurchaseOrder): CreatePurchaseOrderResponse {
         return new CreatePurchaseOrderResponse(po.id);
     }
     constructor(public id: string) {}

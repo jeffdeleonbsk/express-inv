@@ -8,29 +8,9 @@ import { DeactivateUserCmd, DeactivateUserRequest } from "../../modules/users/co
 import { UpdateUserNameCmd, UpdateUserRequest } from "../../modules/users/commands/updateUserNameCmd";
 import { getInstance } from "../common/diContainer";
 import TokenMap from "../common/tokenMap";
-
+import { authAdmin } from "../middlewares/authAdmin";
 const router: Router = Router();
-const authAdmin = async (request: Request, response: Response, next: NextFunction) => {
-    const service: IAuthService = getInstance(TokenMap.authService);
-    const authHeader = request.headers.authorization;
-    if (!authHeader) {
-        response.status(401).json(Result.appFailed("No token provided", "You must provide a valid JWT token in the Authorization header"));
-        return;
-    }
-    const userId = service.getUserId(authHeader);
-    if (!userId) {
-        response.status(401).json(Result.appFailed("No valid token provided", "You must provide a valid JWT token in the Authorization header"));
-        return;
-    }
-    const db = getInstance(TokenMap.authDb);
-    const ret = await db.GetUserById(userId);
-    request.body.authUserId = userId; // Store userId in request for later use
-    if (!ret || ret.roleCode !== "ADMIN") {
-        response.status(403).json(Result.appFailed("Forbidden", "You do not have permission to access this resource"));
-        return;
-    }
-    next();
-};
+
 router.get("/:id", authAdmin, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const ret = await db.GetUserById(request.params.id);

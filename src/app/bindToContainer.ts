@@ -2,9 +2,10 @@
 import { container } from "./common/diContainer";
 import TokenMap from "./common/tokenMap";
 import { AuthService } from "./infrastructure/jwt/authService";
-import { MockInventoryAddService } from "./infrastructure/services/MockInventoryAddService";
+import { InventoryAddService } from "./infrastructure/services/InventoryAddService";
 import { AuthDbSqlite } from "./infrastructure/sqlite/authDbSqlite";
 import { EmailExistsService } from "./infrastructure/sqlite/EmailExistsService";
+import { InventoryDbSqlite } from "./infrastructure/sqlite/InventoryDbSqlite";
 import { PurchaseOrderDbSqlite } from "./infrastructure/sqlite/purchaseOrderDbSqlite";
 import { UserDbSqlite } from "./infrastructure/sqlite/userDbSqlite";
 
@@ -32,7 +33,10 @@ export function bindToContainer() {
         .inSingletonScope();
     container
         .bind(TokenMap.inventoryAddService)
-        .toInstance(MockInventoryAddService) 
+        .toInstance(InventoryAddService)
         .inSingletonScope();
-
+    container
+        .bind(TokenMap.inventoryDb)
+        .toInstance(InventoryDbSqlite)
+        .inSingletonScope();
 }

@@ -1,11 +1,11 @@
 
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
+import { MutableObject } from "../../common/mutableObject";
+import { Vendor } from "../../domain/common/domainValueObjects";
 import { LineItemStatus, PurchaseOrderStatus } from "../../domain/common/enums";
 import { ILineItemParent } from "./iLineItemParent";
 import { PurchaseOrderLineItem } from "./PurchaseOrderLineItem";
-import { Vendor } from "../../domain/common/domainValueObjects";
-import { MutableObject } from "../../common/mutableObject";
 
 // --- Purchase Order ---
 
@@ -74,7 +74,7 @@ public static fromDb(params: {
     if (!vendor.isActive) { throw new DomainError("Vendor must be active."); }
     const id = uuidv4();
     const po = new PurchaseOrder(id, vendor, date, comment);
-    po.isNew = true; 
+    po.isNew = true;
     return po;
   }
   public readonly id: string;
@@ -109,7 +109,7 @@ public static fromDb(params: {
       throw new DomainError("Can only add line items in DRAFT status.");
     }
     item.isNew = true;
-    
+
     this._lineItems.push(item);
   }
 
@@ -117,7 +117,7 @@ public static fromDb(params: {
     if (this._status !== PurchaseOrderStatus.DRAFT) {
       throw new DomainError("Can only remove line items in DRAFT status.");
     }
-    const idx =this._lineItems.findIndex((item) => item.id === lineItemId);
+    const idx = this._lineItems.findIndex((item) => item.id === lineItemId);
     if (idx < 0) {
       throw new DomainError("Line item not found in purchase order.");
     }
@@ -125,7 +125,7 @@ public static fromDb(params: {
       throw new DomainError("Line item not found in purchase order.");
     }
 
-    this._lineItems[idx].isDeleted = true;  
+    this._lineItems[idx].isDeleted = true;
     this.isDirty = true;
   }
 
@@ -181,4 +181,3 @@ public static fromDb(params: {
   }
 }
 export { PurchaseOrderLineItem };
-

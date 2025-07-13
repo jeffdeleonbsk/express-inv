@@ -2,7 +2,7 @@ import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
 import { Quantity } from "../../domain/common/genericValueObjects";
 import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
-import { ReceivingPurchaseOrder, Delivery, IAddToInventoryService } from "../models/PurchaseOrderReceiving";
+import { Delivery, IAddToInventoryService, ReceivingPurchaseOrder } from "../models/PurchaseOrderReceiving";
 
 export class ReceiveDeliveryRequest {
     constructor(
@@ -39,9 +39,9 @@ export class ReceiveDeliveryCmd extends BaseCommand<ReceiveDeliveryRequest, Rece
             this.request.deliveryComment,
             deliveredQuantity
         );
-        
+
         po.receiveDelivery(this.request.lineItemId, delivery, this.inventory);
-       
+
         await this.db.updateReceiving(po);
         return Result.Ok(new ReceiveDeliveryResponse(po.id));
     }

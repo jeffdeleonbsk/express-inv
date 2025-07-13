@@ -1,10 +1,10 @@
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
+import { MutableObject } from "../../common/mutableObject";
+import { Product, Warehouse } from "../../domain/common/domainValueObjects";
 import { LineItemStatus } from "../../domain/common/enums";
 import { Money, Quantity } from "../../domain/common/genericValueObjects";
 import { ILineItemParent } from "./iLineItemParent";
-import { Product, Warehouse } from "../../domain/common/domainValueObjects";
-import { MutableObject } from "../../common/mutableObject";
 
 export class PurchaseOrderLineItem extends MutableObject  {
   // --- Getters ---
@@ -96,7 +96,7 @@ export class PurchaseOrderLineItem extends MutableObject  {
     warehouse: Warehouse,
     orderedQuantity: Quantity,
     unitPrice: Money
-  ) {    
+  ) {
     super();
     this.product = product;
     this._warehouse = warehouse;
@@ -148,7 +148,7 @@ export class PurchaseOrderLineItem extends MutableObject  {
     }
     this._status = LineItemStatus.CONFIRMED;
     this._confirmComment = comment;
-    this._dateConfirmed = date;    
+    this._dateConfirmed = date;
     this.isDirty = true;
   }
 }

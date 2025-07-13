@@ -4,8 +4,8 @@ import { InventoryEntry } from "../modules/inventory/models/inventory";
 
 describe("Inventory Domain Model", () => {
   const activeWarehouse = Warehouse.fromDb("w1", "W1", "Main Warehouse", true, false);
-  const inactiveWarehouse = Warehouse.fromDb("W2","W2", "Old Warehouse", false, false);
-  const refrigeratedWarehouse = Warehouse.fromDb("W3","W3", "Cold Storage", true, true);
+  const inactiveWarehouse = Warehouse.fromDb("W2", "W2", "Old Warehouse", false, false);
+  const refrigeratedWarehouse = Warehouse.fromDb("W3", "W3", "Cold Storage", true, true);
 
   const activeProduct = Product.fromDb("P1", "SKU123", "Milk", true, false);
   const inactiveProduct = Product.fromDb("P2", "SKU456", "Eggs", false, false);
@@ -70,7 +70,7 @@ describe("Inventory Domain Model", () => {
       const entry = InventoryEntry.fromDB({
         id: "entry-3",
         product: activeProduct,
-        warehouse: inactiveWarehouse,        
+        warehouse: inactiveWarehouse,
         quantity: new Quantity(5, "pcs")
       });
 
@@ -83,7 +83,7 @@ describe("Inventory Domain Model", () => {
       const entry = InventoryEntry.fromDB({
         id: "entry-4",
         product: activeProduct,
-        warehouse: activeWarehouse,        
+        warehouse: activeWarehouse,
         quantity: new Quantity(10, "pcs")
       });
 
@@ -106,7 +106,7 @@ describe("Inventory Domain Model", () => {
       const entry = InventoryEntry.fromDB({
         id: "entry-5",
         product: activeProduct,
-        warehouse: activeWarehouse,        
+        warehouse: activeWarehouse,
         quantity: new Quantity(2, "pcs")
       });
       entry.addStock(new Quantity(10, "pcs"));

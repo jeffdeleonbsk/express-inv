@@ -1,5 +1,5 @@
 
-export abstract class MutableObject{
+export abstract class MutableObject {
     private _isDirty: boolean = false;
     private _isNew: boolean = false;
     private _isDeleted: boolean = false;

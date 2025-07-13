@@ -28,9 +28,6 @@ export class Warehouse {
   ) {
     return new Warehouse(id, shortCode, name, isActive, isRefrigerated);
   }
-  public canStore(product: Product): boolean {
-    return product.needRefrigeration === this.isRefrigerated;
-  }
   private constructor(
     public readonly id: string,
     public readonly shortCode: string,
@@ -38,6 +35,9 @@ export class Warehouse {
     public readonly isActive: boolean,
     public readonly isRefrigerated: boolean
   ) {}
+  public canStore(product: Product): boolean {
+    return product.needRefrigeration === this.isRefrigerated;
+  }
 }
 
 export class Product {

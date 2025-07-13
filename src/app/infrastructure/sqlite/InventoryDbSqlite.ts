@@ -1,7 +1,8 @@
 import Database from "better-sqlite3";
+import { Product, Warehouse } from "../../../modules/domain/common/domainValueObjects";
 import { IInventoryDb } from "../../../modules/inventory/iInventoryDb";
 import { InventoryEntry } from "../../../modules/inventory/models/inventory";
-import { Product, Warehouse } from "../../../modules/domain/common/domainValueObjects";
+import { Quantity } from "../../../modules/domain/common/genericValueObjects";
 
 export class InventoryDbSqlite implements IInventoryDb {
     private db: any;
@@ -11,19 +12,22 @@ export class InventoryDbSqlite implements IInventoryDb {
         this.db.pragma("journal_mode = WAL");
     }
 
-    public async getById(id: string): Promise<InventoryEntry | null> {
+    public async getByProductandWarehouseId(productId: string, warehouseId: string): Promise<InventoryEntry | null> {
         const stmt = this.db.prepare(
-            `SELECT id, product_id, warehouse_id, quantity, quantity_unit FROM inventory_items WHERE id = ?`
+            `SELECT id, product_id, warehouse_id, quantity, quantity_unit FROM
+            inventory_items WHERE product_id = ? AND warehouse_id = ?`
         );
-        const row = stmt.get(id);
-        if (!row) return null;
+        const row = stmt.get(productId, warehouseId);
+
+        if (!row) { return null; }
         const product = await this.getProductById(row.product_id);
         const warehouse = await this.getWarehouseById(row.warehouse_id);
+        const quantity = row.quantity ? new Quantity(row.quantity, row.quantity_unit || "pcs") : new Quantity(0, "pcs");
         return InventoryEntry.fromDB({
             id: row.id,
             product: product!,
             warehouse: warehouse!,
-            quantity: row.quantity
+            quantity: quantity
         });
     }
 
@@ -56,7 +60,7 @@ export class InventoryDbSqlite implements IInventoryDb {
             `SELECT id, sku, name, is_active, need_refrigeration FROM products WHERE id = ?`
         );
         const row = stmt.get(id);
-        if (!row) return null;
+        if (!row) { return null; }
         return Product.fromDb(row.id, row.sku, row.name, !!row.is_active, !!row.need_refrigeration);
     }
 
@@ -65,7 +69,7 @@ export class InventoryDbSqlite implements IInventoryDb {
             `SELECT id, short_code, name, is_active, is_refrigerated FROM warehouses WHERE id = ?`
         );
         const row = stmt.get(id);
-        if (!row) return null;
+        if (!row) { return null; }
         return Warehouse.fromDb(row.id, row.short_code, row.name, !!row.is_active, !!row.is_refrigerated);
     }
 }

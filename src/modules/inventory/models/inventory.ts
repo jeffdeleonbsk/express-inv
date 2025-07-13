@@ -1,8 +1,8 @@
 // inventory-domain-model.ts
 import { v4 as uuidv4 } from "uuid";
 
-import { Product, Warehouse } from "../../domain/common/domainValueObjects";
 import { MutableObject } from "../../common/mutableObject";
+import { Product, Warehouse } from "../../domain/common/domainValueObjects";
 import { Quantity } from "../../domain/common/genericValueObjects";
 
 export class InventoryEntry {
@@ -17,10 +17,13 @@ export class InventoryEntry {
   }
 
   public static createNew(
-    product: Product, 
-    warehouse: Warehouse, 
+    product: Product | null,
+    warehouse: Warehouse | null,
     initialQuantity: Quantity = new Quantity(0, "pcs")
   ): InventoryEntry {
+    if (!product || !warehouse) {
+      throw new Error("Product and warehouse must be provided.");
+    }
     if (!warehouse.isActive) {
       throw new Error("Warehouse is not active.");
     }
@@ -51,12 +54,15 @@ export class InventoryEntry {
     if (!this.warehouse.isActive) {
       throw new Error("Warehouse is not active.");
     }
-    this._quantity =new Quantity(this.quantity.value + deliveredQuantity.value, this.quantity.unit);;
+    console.log("Before adding stock:", this.quantity.value, deliveredQuantity.value);
+    this._quantity = new Quantity(this.quantity.value + deliveredQuantity.value, this.quantity.unit);
+    console.log("After adding stock:", this.quantity.value);
+
   }
 
   public takeStock(quantityTaken: Quantity): void {
     this.ensureSufficientStock(quantityTaken);
-    this._quantity = new Quantity(this.quantity.value-quantityTaken.value, this.quantity.unit);
+    this._quantity = new Quantity(this.quantity.value - quantityTaken.value, this.quantity.unit);
   }
 
   private ensureSufficientStock(quantityTaken: Quantity): void {

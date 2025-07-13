@@ -1,7 +1,7 @@
+import { Result } from "../modules/common/result";
+import { Vendor } from "../modules/domain/common/domainValueObjects";
 import { CreatePurchaseOrderCmd, CreatePurchaseOrderRequest } from "../modules/purchaseOrder/commands/createPurchaseOrderCmd";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
-import { Vendor } from "../modules/domain/common/domainValueObjects";
-import { Result } from "../modules/common/result";
 
 describe("CreatePurchaseOrderCmd", () => {
     const mockDb = {

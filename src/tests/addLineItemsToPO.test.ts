@@ -1,5 +1,5 @@
-import { AddLineItemToPurchaseOrderCmd, AddLineItemToPurchaseOrderRequest } from "../modules/purchaseOrder/commands/addLineItemToPurchaseOrderCmd";
 import { Money, Quantity } from "../modules/domain/common/genericValueObjects";
+import { AddLineItemToPurchaseOrderCmd, AddLineItemToPurchaseOrderRequest } from "../modules/purchaseOrder/commands/addLineItemToPurchaseOrderCmd";
 
 describe("AddLineItemToPurchaseOrderCmd", () => {
     const mockDb = {
