@@ -1,5 +1,5 @@
 import { IAuthService } from "../../../modules/common/iAuthUserService";
-import { signJwt, verifyJwt } from "./jwt";
+import { signJwt, verifyJwt } from "../jwt/jwt";
 
 export class AuthService implements IAuthService {
   public getUserId(authHeader: string): string | undefined {
