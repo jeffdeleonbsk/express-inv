@@ -88,7 +88,7 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
    ```
 2. **Set up environment:**
    - Copy `.env.example` to `.env` and set `SQLITE_DB=sample.sqlite`
-3. **Run database seeders:**
+3. **Run database migration and seeders:**
    ```sh
    ts-node src/database/seeder.ts
    ```
@@ -98,7 +98,9 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
    ```
 5. **Run tests:**
    ```sh
-   npm test
+   npm test src/tests
+   or 
+   npx jest src/tests
    ```
 
 ---

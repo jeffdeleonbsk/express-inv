@@ -21,5 +21,9 @@ dist-ssr
 *.ntvs*
 *.njsproj
 *.sln
+*.sqlite
+*.sqlite-journal
+*.sqlite-shm
+*.sqlite-wal
 *.sw?
 .env
