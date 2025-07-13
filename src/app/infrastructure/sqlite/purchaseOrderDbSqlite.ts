@@ -1,17 +1,17 @@
 import Database from "better-sqlite3";
-import { Money, Quantity } from "../../../modules/domain/common/valueObjects";
+import { Money, Quantity } from "../../../modules/domain/common/genericValueObjects";
 import { IPurchaseOrderDb } from "../../../modules/purchaseOrder/iPurchaseOrderDb";
 import { PurchaseOrder, PurchaseOrderLineItem } from "../../../modules/purchaseOrder/models/PurchaseOrderCreation";
 import { Delivery, ReceivingLineItem, ReceivingPurchaseOrder } from "../../../modules/purchaseOrder/models/PurchaseOrderReceiving";
-import { Product, Vendor, Warehouse } from "../../../modules/purchaseOrder/models/valueObjects";
+import { Product, Vendor, Warehouse } from "../../../modules/domain/common/domainValueObjects";
 
 export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
-  private db: any;
-  constructor() {
-    const dbName = process.env.SQLITE_DB;
-    this.db = new Database(dbName);
-    this.db.pragma("journal_mode = WAL");
-  }
+    private db: any;
+    constructor() {
+        const dbName = process.env.SQLITE_DB;
+        this.db = new Database(dbName);
+        this.db.pragma("journal_mode = WAL");
+    }
     public async getPurchaseOrderById(id: string): Promise<PurchaseOrder | null> {
         // Get the purchase order
         const poStmt = this.db.prepare(
@@ -39,14 +39,139 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
             dateCancelled: poRow.date_cancelled ? new Date(poRow.date_cancelled) : undefined
         });
     }
-    public addPO(po: PurchaseOrder): Promise<number> {
-        throw new Error("Method not implemented.");
+    public async addPO(po: PurchaseOrder): Promise<number> {
+        if (po.isNew === false) {
+            return 0; // No changes to save
+        }
+
+        const stmt = this.db.prepare(
+            `INSERT INTO purchase_orders (id, vendor_id, owner_id, status, date_created, date_confirmed, date_cancelled, date_delivered, date_closed, delivered_comment, cancelled_comment, closed_comment, confirmed_comment, created_comment)
+             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`     
+        );
+        const params = [
+            po.id,
+            po.vendor.id,
+            "",
+            po.status,
+            new Date().toISOString(),
+            po.dateConfirmed ? po.dateConfirmed.toISOString() : null,
+            po.dateCancelled ? po.dateCancelled.toISOString() : null,
+            null, // dateDelivered
+            null, // dateClosed
+            null, // deliveredComment
+            null, // cancelledComment
+            null, // closedComment
+            null, // confirmedComment
+            po.comment || ""
+        ];
+        const result = stmt.run(...params);
+        if (result.changes > 0) {
+            // Save line items
+            for (const item of po.lineItems) {
+                await this.processLineItem(item, po.id);
+            }
+        }
+        return result.changes;
     }
-    public updatePO(po: PurchaseOrder): Promise<number> {
-        throw new Error("Method not implemented.");
+    public async processLineItem(lineItem: PurchaseOrderLineItem, poid: string): Promise<number> {
+        if (lineItem.isDeleted === true) {
+            const stmt = this.db.prepare(
+                `DELETE FROM purchase_order_line_items WHERE id = ?`
+            );  
+            const result = stmt.run(lineItem.id);
+            return result.changes; 
+        }
+
+        if (lineItem.isNew === true) {
+            const stmt = this.db.prepare(
+                `INSERT INTO purchase_order_line_items (id, purchase_order_id, product_id, warehouse_id, ordered_quantity, ordered_quantity_unit, unit_price, status, date_created)
+                 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
+            );
+            const params = [
+                lineItem.id,
+                poid,
+                lineItem.product.id,
+                lineItem.warehouse.id,
+                lineItem.orderedQuantity.value,
+                lineItem.orderedQuantity.unit,
+                lineItem.unitPrice.amount,
+                lineItem.status,
+                new Date().toISOString()
+            ];
+            const result = stmt.run(...params);
+            return result.changes; 
+        }
+        if (lineItem.isDirty === true) {
+            // update the line item
+            const stmt = this.db.prepare(
+                `UPDATE purchase_order_line_items
+                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?, ordered_quantity_unit = ?, unit_price = ?, status = ?, 
+                 date_confirmed = ?, date_cancelled = ?, confirmed_comment = ?, cancelled_comment = ?
+
+                 WHERE id = ?`
+            );
+            const params = [
+                lineItem.product.id,
+                lineItem.warehouse.id,
+                lineItem.orderedQuantity.value,
+                lineItem.orderedQuantity.unit,
+                lineItem.unitPrice.amount,
+                lineItem.status,
+                lineItem.dateConfirmed ? lineItem.dateConfirmed.toISOString() : null,
+                lineItem.dateCancelled ? lineItem.dateCancelled.toISOString() : null,
+                lineItem.confirmComment || "",
+                lineItem.cancelComment || "",
+                lineItem.id
+            ];
+            const result = stmt.run(...params);
+            return result.changes;
+        }
+
+        return 0;
+    }    
+    public async updatePO(po: PurchaseOrder): Promise<number> {
+        for (const item of po.lineItems) {
+            await this.processLineItem(item, po.id);
+        }
+        if (po.isDirty === false) {
+            return 0; // No changes to save
+        }
+        const stmt = this.db.prepare(
+            `UPDATE purchase_orders
+             SET vendor_id = ?, owner_id = ?, status = ?, date_confirmed = ?, date_cancelled = ?, date_delivered = ?, date_closed = ?, delivered_comment = ?, cancelled_comment = ?, closed_comment = ?, confirmed_comment = ?, created_comment = ?
+             WHERE id = ?`
+        );
+        const params = [
+            po.vendor.id,
+            "",
+            po.status,
+            po.dateConfirmed ? po.dateConfirmed.toISOString() : null,
+            po.dateCancelled ? po.dateCancelled.toISOString() : null,
+            null, // dateDelivered
+            null, // dateClosed
+            null, // deliveredComment
+            po.cancelComment, // cancelledComment
+            null, // closedComment
+            po.confirmComment || "",
+            po.comment || "",
+            po.id
+        ];
+        const result = stmt.run(...params);
+        return result.changes;
     }
-    public deletePO(id: string): Promise<number> {
-        throw new Error("Method not implemented.");
+    public async deletePO(id: string): Promise<number> {
+        const stmt = this.db.prepare(
+            `DELETE FROM purchase_orders WHERE id = ?`
+        );
+        const result = stmt.run(id);
+        if (result.changes > 0) {
+            // Also delete line items
+            const lineItemStmt = this.db.prepare(
+                `DELETE FROM purchase_order_line_items WHERE purchase_order_id = ?`
+            );
+            lineItemStmt.run(id);
+        }
+        return result.changes;
     }
     public async getReceivingById(id: string): Promise<ReceivingPurchaseOrder | null> {
         // Get the purchase order
@@ -63,7 +188,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
             id: poRow.id,
             status: poRow.status,
             lineItems,
-            dateConfirmed: poRow.date_confirmed ? new Date(poRow.date_confirmed) : null,
+            dateConfirmed: poRow.date_confirmed ? new Date(poRow.date_confirmed) : undefined,
             dateDelivered: poRow.date_delivered ? new Date(poRow.date_delivered) : undefined,
             deliveredComment: poRow.delivered_comment,
             dateCancelled: poRow.date_cancelled ? new Date(poRow.date_cancelled) : undefined,
@@ -72,8 +197,117 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
             closedComment: poRow.closed_comment
         });
     }
-    public updateReceiving(po: ReceivingPurchaseOrder): Promise<number> {
-        throw new Error("Method not implemented.");
+    public async processDelivery(delivery: Delivery, lineItemId: string): Promise<number> {
+        if (delivery.isDeleted === true) {
+            const stmt = this.db.prepare(
+                `DELETE FROM deliveries WHERE id = ?`
+            );
+            const result = stmt.run(delivery.id);
+            return result.changes; 
+        }
+        if (delivery.isNew === true) {
+            const stmt = this.db.prepare(
+                `INSERT INTO deliveries (id, line_item_id, date_delivered, delivery_comment, delivered_quantity, delivered_quantity_unit)
+                 VALUES (?, ?, ?, ?, ?, ?)`
+            );
+            const params = [
+                delivery.id,
+                lineItemId,
+                delivery.dateDelivered.toISOString(),
+                delivery.deliveryComment || "",
+                delivery.deliveredQuantity.value,
+                delivery.deliveredQuantity.unit
+            ];
+            const result = stmt.run(...params);
+            return result.changes; 
+        }
+        if (delivery.isDirty === true) {
+            const stmt = this.db.prepare(
+                `UPDATE deliveries
+                 SET date_delivered = ?, delivery_comment = ?, delivered_quantity = ?, delivered_quantity_unit = ?
+                 WHERE id = ?`
+            );
+            const params = [
+                delivery.dateDelivered.toISOString(),
+                delivery.deliveryComment || "",
+                delivery.deliveredQuantity.value,
+                delivery.deliveredQuantity.unit,
+                delivery.id
+            ];
+            const result = stmt.run(...params);
+            return result.changes;
+        }
+        return 0;
+    }
+    public async processReceivingLineItem(lineItem: ReceivingLineItem, poid: string): Promise<number> {
+        for (const delivery of lineItem.deliveries) {
+            await this.processDelivery(delivery, lineItem.id);  
+        }
+        if (lineItem.isDeleted === true) {
+            const stmt = this.db.prepare(
+                `DELETE FROM purchase_order_line_items WHERE id = ?`
+            );  
+            const result = stmt.run(lineItem.id);
+            return result.changes; 
+        }
+
+        if (lineItem.isDirty === true) {
+            // update the line item
+            const stmt = this.db.prepare(
+                `UPDATE purchase_order_line_items
+                 SET product_id = ?, warehouse_id = ?, ordered_quantity = ?, 
+                 ordered_quantity_unit = ?, status = ?, date_cancelled = ?, 
+                 date_delivered = ?, delivered_comment = ?,
+                 delivered_quantity = ?, delivered_quantity_unit = ?,
+                 cancelled_comment = ?
+                 WHERE id = ?`
+            );
+            const params = [
+                lineItem.product.id,
+                lineItem.warehouse.id,
+                lineItem.orderedQuantity.value,
+                lineItem.orderedQuantity.unit,
+                lineItem.status,
+                lineItem.dateCancelled ? lineItem.dateCancelled.toISOString() : null,
+                lineItem.dateDelivered ? lineItem.dateDelivered.toISOString() : null,
+                lineItem.deliveredComment || "",
+                lineItem.deliveredQuantity.value,
+                lineItem.deliveredQuantity.unit,
+                lineItem.cancelledComment || "",
+                lineItem.id
+            ];
+            const result = stmt.run(...params);
+            return result.changes;
+        }
+
+        return 0;
+    }
+    
+    public async updateReceiving(po: ReceivingPurchaseOrder): Promise<number> {
+        for (const item of po.lineItems) {
+            await this.processReceivingLineItem(item, po.id);
+        }
+        if (po.isDirty === false) {
+            return 0; // No changes to save
+        }
+        const stmt = this.db.prepare(
+            `UPDATE purchase_orders
+             SET status = ?, date_confirmed = ?, date_cancelled = ?, date_delivered = ?, date_closed = ?, delivered_comment = ?, cancelled_comment = ?, closed_comment = ?
+             WHERE id = ?`
+        );
+        const params = [
+            po.status,
+            po.dateConfirmed ? po.dateConfirmed.toISOString() : null,
+            po.dateCancelled ? po.dateCancelled.toISOString() : null,
+            po.dateDelivered ? po.dateDelivered.toISOString() : null,
+            po.dateClosed ? po.dateClosed.toISOString() : null,
+            po.deliveredComment || "",
+            po.cancelledComment || "",
+            po.closedComment || "",
+            po.id
+        ];
+        const result = stmt.run(...params);
+        return result.changes;
     }
     public async getVendorById(id: string): Promise<Vendor | null> {
         const stmt = this.db.prepare(

@@ -5,7 +5,7 @@ import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import authRouter from "./app/routes/authRoutes";
 import usersRouter from "./app/routes/userRoutes";
-
+import purchaseOrderRouter from "./app/routes/purchaseOrderRoutes";
 import { bindToContainer } from "./app/bindToContainer";
 
 dotenv.config();
@@ -24,6 +24,7 @@ app.set("views", path.join(__dirname, "modules"));
 
 app.use("/api/users", usersRouter);
 app.use("/api/auth", authRouter);
+app.use("/api/purchase-orders", purchaseOrderRouter)
 
 app.listen(PORT, () => {
     bindToContainer();

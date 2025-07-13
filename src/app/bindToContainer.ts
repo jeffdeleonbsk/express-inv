@@ -2,6 +2,7 @@
 import { container } from "./common/diContainer";
 import TokenMap from "./common/tokenMap";
 import { AuthService } from "./infrastructure/jwt/authService";
+import { MockInventoryAddService } from "./infrastructure/services/MockInventoryAddService";
 import { AuthDbSqlite } from "./infrastructure/sqlite/authDbSqlite";
 import { EmailExistsService } from "./infrastructure/sqlite/EmailExistsService";
 import { PurchaseOrderDbSqlite } from "./infrastructure/sqlite/purchaseOrderDbSqlite";
@@ -28,6 +29,10 @@ export function bindToContainer() {
     container
         .bind(TokenMap.purchaseOrderDb)
         .toInstance(PurchaseOrderDbSqlite)
+        .inSingletonScope();
+    container
+        .bind(TokenMap.inventoryAddService)
+        .toInstance(MockInventoryAddService) 
         .inSingletonScope();
 
 }

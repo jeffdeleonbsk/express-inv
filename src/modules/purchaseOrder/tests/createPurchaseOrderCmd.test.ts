@@ -1,6 +1,6 @@
 import { CreatePurchaseOrderCmd, CreatePurchaseOrderRequest } from "../commands/createPurchaseOrderCmd";
 import { PurchaseOrder } from "../models/PurchaseOrderCreation";
-import { Vendor } from "../models/valueObjects";
+import { Vendor } from "../../domain/common/domainValueObjects";
 import { Result } from "../../common/result";
 
 describe("CreatePurchaseOrderCmd", () => {

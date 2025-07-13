@@ -4,6 +4,7 @@ import { IAuthService } from "../../modules/common/iAuthUserService";
 import { IEmailExistsService } from "../../modules/domain/interfaces/iEmailExistsService";
 import { IPurchaseOrderDb } from "../../modules/purchaseOrder/iPurchaseOrderDb";
 import { IUserDb } from "../../modules/users/iUserDb";
+import { IAddToInventoryService } from "../../modules/purchaseOrder/models/PurchaseOrderReceiving";
 
 const tokenMap = {
     userDb: token<IUserDb>("UserDb"),
@@ -11,5 +12,6 @@ const tokenMap = {
     authService: token<IAuthService>("AuthService"),
     emailExistsService: token<IEmailExistsService>("EmailExistsService"),
     purchaseOrderDb: token<IPurchaseOrderDb>("PurchaseOrderDb"),
+    inventoryAddService: token<IAddToInventoryService>("inventoryAddService"),
 };
 export default tokenMap;

@@ -1,8 +1,8 @@
 // purchase-order.spec.ts
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
-import { Money, Quantity } from "../modules/domain/common/valueObjects";
+import { Money, Quantity } from "../modules/domain/common/genericValueObjects";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
-import { Product, Vendor, Warehouse } from "../modules/purchaseOrder/models/valueObjects";
+import { Product, Vendor, Warehouse } from "../modules/domain/common/domainValueObjects";
 import { PurchaseOrderLineItem } from "../modules/purchaseOrder/models/PurchaseOrderLineItem";
 
 describe("PurchaseOrder domain model", () => {

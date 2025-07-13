@@ -118,3 +118,11 @@ CREATE TABLE "products" (
 	PRIMARY KEY ("id")
 );
 
+CREATE TABLE "inventory_items" (
+	"id" VARCHAR(40) NOT NULL,
+	"product_id" VARCHAR(40) NOT NULL,
+	"warehouse_id" VARCHAR(40) NOT NULL,
+	"quantity" REAL NOT NULL,
+	"quantity_unit" VARCHAR(20) NOT NULL,
+	PRIMARY KEY ("id")
+);

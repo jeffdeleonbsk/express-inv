@@ -4,11 +4,12 @@ import { DomainError } from "../../common/domainError";
 import { LineItemStatus, PurchaseOrderStatus } from "../../domain/common/enums";
 import { ILineItemParent } from "./iLineItemParent";
 import { PurchaseOrderLineItem } from "./PurchaseOrderLineItem";
-import { Vendor } from "./valueObjects";
+import { Vendor } from "../../domain/common/domainValueObjects";
+import { MutableObject } from "../../common/mutableObject";
 
 // --- Purchase Order ---
 
-export class PurchaseOrder implements ILineItemParent {
+export class PurchaseOrder extends MutableObject implements ILineItemParent {
   // --- Getters ---
   get status(): PurchaseOrderStatus {
     return this._status;
@@ -72,7 +73,9 @@ public static fromDb(params: {
     }
     if (!vendor.isActive) { throw new DomainError("Vendor must be active."); }
     const id = uuidv4();
-    return new PurchaseOrder(id, vendor, date, comment);
+    const po = new PurchaseOrder(id, vendor, date, comment);
+    po.isNew = true; 
+    return po;
   }
   public readonly id: string;
   public readonly vendor: Vendor;
@@ -92,6 +95,7 @@ public static fromDb(params: {
     date: Date,
     comment?: string
   ) {
+    super();
     this.vendor = vendor;
     this.date = date;
     this.comment = comment;
@@ -104,6 +108,8 @@ public static fromDb(params: {
     if (this._status !== PurchaseOrderStatus.DRAFT) {
       throw new DomainError("Can only add line items in DRAFT status.");
     }
+    item.isNew = true;
+    
     this._lineItems.push(item);
   }
 
@@ -111,7 +117,16 @@ public static fromDb(params: {
     if (this._status !== PurchaseOrderStatus.DRAFT) {
       throw new DomainError("Can only remove line items in DRAFT status.");
     }
-    this._lineItems = this._lineItems.filter((item) => item.id !== lineItemId);
+    const idx =this._lineItems.findIndex((item) => item.id === lineItemId);
+    if (idx < 0) {
+      throw new DomainError("Line item not found in purchase order.");
+    }
+    if (this._lineItems[idx].isDeleted) {
+      throw new DomainError("Line item not found in purchase order.");
+    }
+
+    this._lineItems[idx].isDeleted = true;  
+    this.isDirty = true;
   }
 
   public cancel(date: Date, comment: string) {
@@ -127,8 +142,13 @@ public static fromDb(params: {
     this._status = PurchaseOrderStatus.DRAFT_CANCELLED;
     this._cancelComment = comment;
     this._dateCancelled = date;
+    this.isDirty = true;
 
-    this._lineItems.forEach((item) => item.cancel(this, date, comment));
+    this._lineItems.forEach((item) => {
+      if (item.isDeleted === false) {
+        item.cancel(this, date, comment);
+      }
+    });
   }
 
   public confirm(date: Date, comment: string) {
@@ -148,12 +168,17 @@ public static fromDb(params: {
     this._status = PurchaseOrderStatus.CONFIRMED;
     this._confirmComment = comment;
     this._dateConfirmed = date;
+    this.isDirty = true;
 
-    this._lineItems.forEach((item) => item.confirm(this, date, comment));
+    this._lineItems.forEach((item) => {
+      if (item.isDeleted === false) {
+        item.confirm(this, date, comment);
+      }
+    });
   }
   public ownsLineItem(id: string): boolean {
     return this._lineItems.findIndex((item) => item.id === id) >= 0;
   }
 }
 export { PurchaseOrderLineItem };
-
+

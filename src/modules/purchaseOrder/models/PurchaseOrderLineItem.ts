@@ -1,11 +1,12 @@
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
 import { LineItemStatus } from "../../domain/common/enums";
-import { Money, Quantity } from "../../domain/common/valueObjects";
+import { Money, Quantity } from "../../domain/common/genericValueObjects";
 import { ILineItemParent } from "./iLineItemParent";
-import { Product, Warehouse } from "./valueObjects";
+import { Product, Warehouse } from "../../domain/common/domainValueObjects";
+import { MutableObject } from "../../common/mutableObject";
 
-export class PurchaseOrderLineItem {
+export class PurchaseOrderLineItem extends MutableObject  {
   // --- Getters ---
   get warehouse(): Warehouse {
     return this._warehouse;
@@ -75,8 +76,10 @@ export class PurchaseOrderLineItem {
       throw new DomainError("Product refrigeration requirement does not match warehouse capability.");
     }
     const id = uuidv4();
-    return new PurchaseOrderLineItem(id, product, warehouse, orderedQuantity, unitPrice);
-  }
+    const ret = new PurchaseOrderLineItem(id, product, warehouse, orderedQuantity, unitPrice);
+    ret.isNew = true;
+    return ret;
+}
   public readonly id: string;
   public readonly product: Product;
   private _warehouse: Warehouse;
@@ -93,7 +96,8 @@ export class PurchaseOrderLineItem {
     warehouse: Warehouse,
     orderedQuantity: Quantity,
     unitPrice: Money
-  ) {
+  ) {    
+    super();
     this.product = product;
     this._warehouse = warehouse;
     this._orderedQuantity = orderedQuantity;
@@ -133,6 +137,7 @@ export class PurchaseOrderLineItem {
     this._status = LineItemStatus.LINE_CANCELLED;
     this._cancelComment = comment;
     this._dateCancelled = date;
+    this.isDirty = true;
   }
   public confirm(po: ILineItemParent, date: Date, comment: string) {
     if (po === null || po === undefined) {
@@ -143,6 +148,7 @@ export class PurchaseOrderLineItem {
     }
     this._status = LineItemStatus.CONFIRMED;
     this._confirmComment = comment;
-    this._dateConfirmed = date;
+    this._dateConfirmed = date;    
+    this.isDirty = true;
   }
 }

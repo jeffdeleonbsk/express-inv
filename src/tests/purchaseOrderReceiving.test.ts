@@ -1,7 +1,7 @@
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
-import { Quantity } from "../modules/domain/common/valueObjects";
+import { Quantity } from "../modules/domain/common/genericValueObjects";
 import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderReceiving";
-import { Product, Warehouse } from "../modules/purchaseOrder/models/valueObjects";
+import { Product, Warehouse } from "../modules/domain/common/domainValueObjects";
 
 describe("ReceivingPurchaseOrder", () => {
 

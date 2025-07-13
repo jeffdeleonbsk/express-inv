@@ -1,6 +1,6 @@
 import { PurchaseOrder } from "./models/PurchaseOrderCreation";
 import { ReceivingPurchaseOrder } from "./models/PurchaseOrderReceiving";
-import { Product, Vendor, Warehouse } from "./models/valueObjects";
+import { Product, Vendor, Warehouse } from "../domain/common/domainValueObjects";
 
 export interface IPurchaseOrderDb {
   // Creation PO

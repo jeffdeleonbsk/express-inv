@@ -1,9 +1,9 @@
 import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
 import { PurchaseOrder} from "../models/PurchaseOrderCreation";
-import { Vendor, Warehouse, Product } from "../models/valueObjects";
+import { Vendor, Warehouse, Product } from "../../domain/common/domainValueObjects";
 import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
-import { Money, Quantity } from "../../domain/common/valueObjects";
+import { Money, Quantity } from "../../domain/common/genericValueObjects";
 
 export class CreatePurchaseOrderRequest {
     constructor(
