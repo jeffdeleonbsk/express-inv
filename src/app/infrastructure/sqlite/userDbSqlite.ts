@@ -107,15 +107,11 @@ public async GetUserByEmail(
         return this.getAllStmt.all();
     }
     public async Add(usr: DomainUser): Promise<number> {
-        console.log(usr);
         const ret =  this.addStmt.run(usr.id, usr.firstname, usr.lastname, usr.email, usr.password, usr.status, usr.role!.code);
-
         return ret.lastInsertRowid;
     }
     public async Update(usr: DomainUser): Promise<number> {
-        console.log("User To Update: ", usr);
         const ret =  this.updateStmt.run(usr.firstname, usr.lastname, usr.email, usr.password, usr.status, usr.role!.code, usr.id);
-
         return ret.changes;
     }
     public async Delete(usr: DomainUser): Promise<number> {

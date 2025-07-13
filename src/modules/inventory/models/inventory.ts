@@ -54,10 +54,7 @@ export class InventoryEntry {
     if (!this.warehouse.isActive) {
       throw new Error("Warehouse is not active.");
     }
-    console.log("Before adding stock:", this.quantity.value, deliveredQuantity.value);
     this._quantity = new Quantity(this.quantity.value + deliveredQuantity.value, this.quantity.unit);
-    console.log("After adding stock:", this.quantity.value);
-
   }
 
   public takeStock(quantityTaken: Quantity): void {
