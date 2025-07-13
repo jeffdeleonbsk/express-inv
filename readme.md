@@ -90,7 +90,8 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
    - Copy `.env.example` to `.env` and set `SQLITE_DB=sample.sqlite`
 3. **Run database migration and seeders:**
    ```sh
-   ts-node src/database/seeder.ts
+   npx ts-node src/database/migrate.ts
+   npx ts-node src/database/seeder.ts
    ```
 4. **Start the server:**
    ```sh
