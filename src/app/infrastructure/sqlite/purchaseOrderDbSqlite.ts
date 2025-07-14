@@ -184,7 +184,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
         const lineItems = await this.getLineItemsByReceivingId(id);
 
         // Map to ReceivingPurchaseOrder
-        return ReceivingPurchaseOrder.fromDB({
+        return ReceivingPurchaseOrder.fromDb({
             id: poRow.id,
             status: poRow.status,
             lineItems,
@@ -341,7 +341,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
         );
         const rows = stmt.all(lineItemId);
         // You may want to map these rows to your Delivery domain model
-        const deliveries = rows.map((row: any) => Delivery.fromDB({
+        const deliveries = rows.map((row: any) => Delivery.fromDb({
             id: row.id,
             lineItemId: row.line_item_id,
             dateDelivered: new Date(row.date_delivered),
@@ -362,7 +362,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
             const product = await this.getProductById(row.product_id);
             const warehouse = await this.getWarehouseById(row.warehouse_id);
             const deliveries = await this.getDeliveriesByLineItemId(row.id);
-            return ReceivingLineItem.fromDB({
+            return ReceivingLineItem.fromDb({
                 id: row.id,
                 product: product!,
                 warehouse: warehouse!,
@@ -390,7 +390,7 @@ export class PurchaseOrderDbSqlite implements IPurchaseOrderDb {
         const items = await Promise.all(rows.map(async (row: any) => {
             const product = await this.getProductById(row.product_id);
             const warehouse = await this.getWarehouseById(row.warehouse_id);
-            return PurchaseOrderLineItem.fromDB({
+            return PurchaseOrderLineItem.fromDb({
                 id: row.id,
                 product: product!,
                 warehouse: warehouse!,

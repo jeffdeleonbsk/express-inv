@@ -23,7 +23,7 @@ export class InventoryDbSqlite implements IInventoryDb {
         const product = await this.getProductById(row.product_id);
         const warehouse = await this.getWarehouseById(row.warehouse_id);
         const quantity = row.quantity ? new Quantity(row.quantity, row.quantity_unit || "pcs") : new Quantity(0, "pcs");
-        return InventoryEntry.fromDB({
+        return InventoryEntry.fromDb({
             id: row.id,
             product: product!,
             warehouse: warehouse!,

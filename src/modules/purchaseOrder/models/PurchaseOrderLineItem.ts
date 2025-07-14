@@ -32,7 +32,7 @@ export class PurchaseOrderLineItem extends MutableObject  {
   get dateCancelled(): Date | undefined {
     return this._dateCancelled;
   }
-  public static fromDB(params: {
+  public static fromDb(params: {
     id: string;
     product: Product;
     warehouse: Warehouse;

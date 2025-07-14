@@ -28,7 +28,7 @@ export class User {
         }
         return "";
     }
-    public static fromDB(
+    public static fromDb(
         id: string,
         firstname: string,
         lastname: string,

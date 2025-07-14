@@ -86,7 +86,7 @@ export class AuthDbSqlite implements IAuthDb {
         if (!ret) {
             return null;
         }
-        const usr = DomainUser.fromDB(
+        const usr = DomainUser.fromDb(
             ret.id,
             ret.firstname,
             ret.lastname,
@@ -104,7 +104,7 @@ export class AuthDbSqlite implements IAuthDb {
         if (!ret) {
             return null;
         }
-        const usr = DomainUser.fromDB(
+        const usr = DomainUser.fromDb(
             ret.id,
             ret.firstname,
             ret.lastname,

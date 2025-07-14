@@ -7,7 +7,7 @@ import { Quantity } from "../../domain/common/genericValueObjects";
 
 export class InventoryEntry {
 
-  public static fromDB(params: {
+  public static fromDb(params: {
     id: string;
     product: Product;
     warehouse: Warehouse;

@@ -40,9 +40,9 @@ describe("Inventory Domain Model", () => {
     });
   });
 
-  describe("InventoryEntry.fromDB", () => {
+  describe("InventoryEntry.fromDb", () => {
     it("creates entry with provided values", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-1",
         product: activeProduct,
         warehouse: activeWarehouse,
@@ -55,7 +55,7 @@ describe("Inventory Domain Model", () => {
 
   describe("InventoryEntry.addStock", () => {
     it("adds stock correctly", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-2",
         product: activeProduct,
         warehouse: activeWarehouse,
@@ -67,7 +67,7 @@ describe("Inventory Domain Model", () => {
     });
 
     it("throws if warehouse is inactive", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-3",
         product: activeProduct,
         warehouse: inactiveWarehouse,
@@ -80,7 +80,7 @@ describe("Inventory Domain Model", () => {
 
   describe("InventoryEntry.takeStock", () => {
     it("deducts stock correctly", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-4",
         product: activeProduct,
         warehouse: activeWarehouse,
@@ -92,7 +92,7 @@ describe("Inventory Domain Model", () => {
     });
 
     it("throws if stock is insufficient", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-5",
         product: activeProduct,
         warehouse: activeWarehouse,
@@ -103,7 +103,7 @@ describe("Inventory Domain Model", () => {
     });
 
     it("handles multiple add and take operation correctly", () => {
-      const entry = InventoryEntry.fromDB({
+      const entry = InventoryEntry.fromDb({
         id: "entry-5",
         product: activeProduct,
         warehouse: activeWarehouse,

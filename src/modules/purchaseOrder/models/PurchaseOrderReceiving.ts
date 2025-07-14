@@ -12,7 +12,7 @@ export interface IAddToInventoryService {
 }
 
 export class Delivery extends MutableObject {
-    public static fromDB(params: {
+    public static fromDb(params: {
         id: string;
         lineItemId: string;
         dateDelivered: Date;
@@ -58,7 +58,7 @@ export class Delivery extends MutableObject {
 }
 
 export class ReceivingLineItem extends MutableObject {
-    public static fromDB(params: {
+    public static fromDb(params: {
         id: string;
         product: Product;
         warehouse: Warehouse;
@@ -180,7 +180,7 @@ export class ReceivingLineItem extends MutableObject {
 }
 
 export class ReceivingPurchaseOrder extends MutableObject implements ILineItemParent {
-    public static fromDB(params: {
+    public static fromDb(params: {
         id: string;
         status: PurchaseOrderStatus;
         lineItems: ReceivingLineItem[];

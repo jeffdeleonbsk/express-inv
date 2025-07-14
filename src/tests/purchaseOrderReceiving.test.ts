@@ -39,7 +39,7 @@ describe("ReceivingPurchaseOrder", () => {
   const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem => {
     const product = Product.fromDb(productId, productId, "Test Product", true, false);
     const warehouse = Warehouse.fromDb(warehouseId, warehouseId, "Test Warehouse", true, false);
-    return ReceivingLineItem.fromDB({
+    return ReceivingLineItem.fromDb({
       id,
       product,
       warehouse,
@@ -57,7 +57,7 @@ describe("ReceivingPurchaseOrder", () => {
   it("should receive delivery and update statuses", () => {
     const delivery = Delivery.createNew( "line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
-    const po = ReceivingPurchaseOrder.fromDB({
+    const po = ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
@@ -83,7 +83,7 @@ describe("ReceivingPurchaseOrder", () => {
   it("should mark line item and PO as fully delivered when quantity matches", () => {
     const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(10, "pcs"), );
     const lineItem = createTestLineItem();
-    const po = ReceivingPurchaseOrder.fromDB({
+    const po = ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
@@ -99,7 +99,7 @@ describe("ReceivingPurchaseOrder", () => {
 
   it("should cancel line item and update PO status if all cancelled", () => {
     const lineItem = createTestLineItem();
-    const po = ReceivingPurchaseOrder.fromDB({
+    const po = ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
@@ -115,7 +115,7 @@ describe("ReceivingPurchaseOrder", () => {
   it("should throw error if receiving delivery in invalid PO status", () => {
     const delivery = Delivery.createNew("line-item-id", date, comment, new Quantity(5, "pcs"), );
     const lineItem = createTestLineItem();
-    const po =  ReceivingPurchaseOrder.fromDB({
+    const po =  ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.DRAFT_CANCELLED,
           lineItems: [lineItem],
@@ -130,7 +130,7 @@ describe("ReceivingPurchaseOrder", () => {
   it("should throw error if receiving delivery in invalid PO status", () => {
     const lineItem = createTestLineItem();
     const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
-    const po = ReceivingPurchaseOrder.fromDB({
+    const po = ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
@@ -148,7 +148,7 @@ describe("ReceivingPurchaseOrder", () => {
   it("should throw error if receiving delivery in invalid line item status", () => {
     const lineItem = createTestLineItem();
     const line2 = createTestLineItem("line-item-id2", "product-2", "warehouse-1");
-    const po = ReceivingPurchaseOrder.fromDB({
+    const po = ReceivingPurchaseOrder.fromDb({
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem, line2],
