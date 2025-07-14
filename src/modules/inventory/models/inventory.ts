@@ -33,7 +33,7 @@ export class InventoryEntry {
     if (!warehouse.canStore(product)) {
       throw new Error("Warehouse cannot store this product type.");
     }
-    return new InventoryEntry(uuidv4(), product, warehouse, initialQuantity);
+    return new InventoryEntry("INV-" + uuidv4(), product, warehouse, initialQuantity);
   }
   private _quantity: Quantity;
 
