@@ -1,6 +1,6 @@
 import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
-import { Product, Vendor, Warehouse } from "../../domain/common/domainValueObjects";
+import { Product, Vendor, Warehouse } from "../../domain/common/commonEntities";
 import { Money, Quantity } from "../../domain/common/genericValueObjects";
 import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
 import { PurchaseOrder} from "../models/PurchaseOrderCreation";

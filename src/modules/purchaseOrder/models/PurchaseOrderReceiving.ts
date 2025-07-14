@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 import { DomainError } from "../../common/domainError";
 import { MutableObject } from "../../common/mutableObject";
-import { Product, Warehouse } from "../../domain/common/domainValueObjects";
+import { Product, Warehouse } from "../../domain/common/commonEntities";
 import { LineItemStatus, PurchaseOrderStatus } from "../../domain/common/enums";
 import { Quantity } from "../../domain/common/genericValueObjects";
 import { ILineItemParent } from "./iLineItemParent";

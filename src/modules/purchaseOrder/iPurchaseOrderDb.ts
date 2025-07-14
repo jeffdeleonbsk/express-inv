@@ -1,4 +1,4 @@
-import { Product, Vendor, Warehouse } from "../domain/common/domainValueObjects";
+import { Product, Vendor, Warehouse } from "../domain/common/commonEntities";
 import { PurchaseOrder } from "./models/PurchaseOrderCreation";
 import { ReceivingPurchaseOrder } from "./models/PurchaseOrderReceiving";
 

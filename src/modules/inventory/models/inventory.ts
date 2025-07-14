@@ -2,7 +2,7 @@
 import { v4 as uuidv4 } from "uuid";
 
 import { MutableObject } from "../../common/mutableObject";
-import { Product, Warehouse } from "../../domain/common/domainValueObjects";
+import { Product, Warehouse } from "../../domain/common/commonEntities";
 import { Quantity } from "../../domain/common/genericValueObjects";
 
 export class InventoryEntry {

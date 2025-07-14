@@ -1,4 +1,4 @@
-import { Product, Warehouse } from "../domain/common/domainValueObjects";
+import { Product, Warehouse } from "../domain/common/commonEntities";
 import { InventoryEntry } from "./models/inventory";
 
 export interface IInventoryDb {

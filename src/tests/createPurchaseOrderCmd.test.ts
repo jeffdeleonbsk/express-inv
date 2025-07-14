@@ -1,5 +1,5 @@
 import { Result } from "../modules/common/result";
-import { Vendor } from "../modules/domain/common/domainValueObjects";
+import { Vendor } from "../modules/domain/common/commonEntities";
 import { CreatePurchaseOrderCmd, CreatePurchaseOrderRequest } from "../modules/purchaseOrder/commands/createPurchaseOrderCmd";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
 

@@ -1,4 +1,4 @@
-import { Product, Warehouse } from "../modules/domain/common/domainValueObjects";
+import { Product, Warehouse } from "../modules/domain/common/commonEntities";
 import { Quantity } from "../modules/domain/common/genericValueObjects";
 import { InventoryEntry } from "../modules/inventory/models/inventory";
 

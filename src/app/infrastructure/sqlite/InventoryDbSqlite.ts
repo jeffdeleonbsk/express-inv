@@ -1,5 +1,5 @@
 import Database from "better-sqlite3";
-import { Product, Warehouse } from "../../../modules/domain/common/domainValueObjects";
+import { Product, Warehouse } from "../../../modules/domain/common/commonEntities";
 import { Quantity } from "../../../modules/domain/common/genericValueObjects";
 import { IInventoryDb } from "../../../modules/inventory/iInventoryDb";
 import { InventoryEntry } from "../../../modules/inventory/models/inventory";

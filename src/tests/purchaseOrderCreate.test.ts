@@ -1,5 +1,5 @@
 // purchase-order.spec.ts
-import { Product, Vendor, Warehouse } from "../modules/domain/common/domainValueObjects";
+import { Product, Vendor, Warehouse } from "../modules/domain/common/commonEntities";
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
 import { Money, Quantity } from "../modules/domain/common/genericValueObjects";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
