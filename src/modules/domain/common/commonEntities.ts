@@ -1,5 +1,5 @@
 
-// --- Value Objects / Entities ---
+// Immutable Entities ---
 
 export class Vendor {
   public static fromDb(
