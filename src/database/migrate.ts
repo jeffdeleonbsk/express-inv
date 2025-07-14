@@ -88,6 +88,8 @@ sqls.push(`CREATE TABLE "purchase_order_line_items" (
 	"status" VARCHAR(30) NOT NULL,
 	"delivered_quantity" REAL,
 	"delivered_quantity_unit" VARCHAR(20),
+	"unit_price" REAL,
+	"unit_price_currency" VARCHAR(20),
 	"date_created" DATETIME NOT NULL,
 	"date_confirmed" DATETIME NULL,
 	"date_cancelled" DATETIME NULL,
