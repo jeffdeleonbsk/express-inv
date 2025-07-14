@@ -29,15 +29,15 @@ const insertRaStmt = db.prepare
      (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 );
 
-insertRaStmt.run(uuidv4(), "ADMIN", "USERS", 1, 1, 1, 1, 1, 1, 1  );
-insertRaStmt.run(uuidv4(), "ADMIN", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
-insertRaStmt.run(uuidv4(), "ADMIN", "TRANSFERS", 1, 1, 1, 1, 1, 1, 1  );
-insertRaStmt.run(uuidv4(), "PO_ADMIN", "USERS", 1, 1, 1, 0, 0, 0, 0  );
-insertRaStmt.run(uuidv4(), "PO_ADMIN", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
-insertRaStmt.run(uuidv4(), "PO_ADMIN", "TRANSFERS", 0, 0, 0, 0, 0, 0, 0  );
-insertRaStmt.run(uuidv4(), "ENCODER", "USERS", 1, 1, 1, 0, 0, 0, 0  );
-insertRaStmt.run(uuidv4(), "ENCODER", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
-insertRaStmt.run(uuidv4(), "ENCODER", "TRANSFERS", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "ADMIN", "USERS", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "ADMIN", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "ADMIN", "TRANSFERS", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "PO_ADMIN", "USERS", 1, 1, 1, 0, 0, 0, 0  );
+insertRaStmt.run("USER-" + uuidv4(), "PO_ADMIN", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "PO_ADMIN", "TRANSFERS", 0, 0, 0, 0, 0, 0, 0  );
+insertRaStmt.run("USER-" + uuidv4(), "ENCODER", "USERS", 1, 1, 1, 0, 0, 0, 0  );
+insertRaStmt.run("USER-" + uuidv4(), "ENCODER", "PURCHASES", 1, 1, 1, 1, 1, 1, 1  );
+insertRaStmt.run("USER-" + uuidv4(), "ENCODER", "TRANSFERS", 1, 1, 1, 1, 1, 1, 1  );
 
 const insertRole = db.prepare<[string, string, string, number], number>(
     `INSERT INTO roles (code, name, description, is_active) VALUES (?, ?, ?, ?)`

@@ -72,7 +72,7 @@ public static fromDb(params: {
       throw new DomainError("Vendor must be provided.");
     }
     if (!vendor.isActive) { throw new DomainError("Vendor must be active."); }
-    const id = uuidv4();
+    const id = "PO-" + uuidv4();
     const po = new PurchaseOrder(id, vendor, date, comment);
     po.isNew = true;
     return po;

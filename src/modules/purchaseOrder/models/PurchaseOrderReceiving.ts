@@ -37,7 +37,7 @@ export class Delivery extends MutableObject {
             throw new DomainError("Delivered quantity must be greater than zero.");
         }
         const delivery = new Delivery(
-            uuidv4(),
+            "DELIVER-" + uuidv4(),
             lineItemId,
             dateDelivered,
             deliveryComment,

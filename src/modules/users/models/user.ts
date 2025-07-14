@@ -45,7 +45,7 @@ export class User {
         }
         const hash = await bcrypt.hash(password, 10);
         const user = new User(
-            uuidv4(), firstname, lastname, email, hash, status, role
+            "USER-" + uuidv4(), firstname, lastname, email, hash, status, role
         );
         return Result.Ok(user);
     }

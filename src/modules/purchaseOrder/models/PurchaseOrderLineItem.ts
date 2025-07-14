@@ -75,7 +75,7 @@ export class PurchaseOrderLineItem extends MutableObject  {
     if (product.needRefrigeration !== warehouse.isRefrigerated) {
       throw new DomainError("Product refrigeration requirement does not match warehouse capability.");
     }
-    const id = uuidv4();
+    const id = "POLI-" + uuidv4();
     const ret = new PurchaseOrderLineItem(id, product, warehouse, orderedQuantity, unitPrice);
     ret.isNew = true;
     return ret;
