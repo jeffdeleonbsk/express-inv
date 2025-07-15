@@ -8,11 +8,7 @@ export abstract class BaseCommand<T extends object, U extends object>  {
         this.request = req;
 
     }
-    protected publishEvent(response: U){
-        // just an empty method to be overridden by subclasses if needed
-        // this is where you can publish events or perform actions after command execution
-    }
-    
+
     public async execute(): Promise<Result<U>> {
         const retValidation = await this.validate();
         if (retValidation.isSuccess === false) {
@@ -37,6 +33,10 @@ export abstract class BaseCommand<T extends object, U extends object>  {
 
     }
     public abstract doCommand(): Promise<Result<U>>;
+    protected publishEvent(response: U) {
+        // just an empty method to be overridden by subclasses if needed
+        // this is where you can publish events or perform actions after command execution
+    }
 
     protected getValidationRules(): any {
         return {};

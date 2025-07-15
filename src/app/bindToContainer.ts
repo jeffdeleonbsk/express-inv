@@ -1,7 +1,10 @@
 
 import { container } from "./common/diContainer";
 import TokenMap from "./common/tokenMap";
+import { EventPublisher } from "./infrastructure/nodeEvents/EventPublisher";
+import { EventSubscriber } from "./infrastructure/nodeEvents/EventSubscriber";
 import { AuthService } from "./infrastructure/services/authService";
+import { EventBasedInventoryAddService } from "./infrastructure/services/EventBasedInventoryAddService";
 import { InventoryAddService } from "./infrastructure/services/InventoryAddService";
 import { AuthDbSqlite } from "./infrastructure/sqlite/authDbSqlite";
 import { EmailExistsService } from "./infrastructure/sqlite/EmailExistsService";
@@ -33,10 +36,19 @@ export function bindToContainer() {
         .inSingletonScope();
     container
         .bind(TokenMap.inventoryAddService)
-        .toInstance(InventoryAddService)
+        .toInstance(EventBasedInventoryAddService)
         .inSingletonScope();
     container
         .bind(TokenMap.inventoryDb)
         .toInstance(InventoryDbSqlite)
         .inSingletonScope();
+    container
+        .bind(TokenMap.eventSubscriber)
+        .toInstance(EventSubscriber)
+        .inSingletonScope();
+    container
+        .bind(TokenMap.eventPublisher)
+        .toInstance(EventPublisher)
+        .inSingletonScope();
+
 }

@@ -4,6 +4,7 @@ import express, { Request, Response } from "express";
 import expressLayouts from "express-ejs-layouts";
 import path from "path";
 import { bindToContainer } from "./app/bindToContainer";
+import { bindEventHandlers } from "./app/bindEventHandlers";
 import authRouter from "./app/routes/authRoutes";
 import purchaseOrderRouter from "./app/routes/purchaseOrderRoutes";
 import usersRouter from "./app/routes/userRoutes";
@@ -28,5 +29,6 @@ app.use("/api/purchase-orders", purchaseOrderRouter);
 
 app.listen(PORT, () => {
     bindToContainer();
-    console.log(`Listening osssn port: ${PORT}` + PORT);
+    bindEventHandlers();
+    console.log(`Listening on port: ${PORT}`);
 });

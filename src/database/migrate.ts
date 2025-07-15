@@ -39,7 +39,7 @@ sqls.push(`CREATE TABLE "roles" (
 );`);
 sqls.push(`CREATE TABLE "role_access" (
 	"id" VARCHAR(60) NOT NULL,
-	"role_code" VARCHAR(20)  NOT NULL,	
+	"role_code" VARCHAR(20)  NOT NULL,
 	"resource_code" VARCHAR(20)  NOT NULL,
 	"can_list" TINYINT  NOT NULL,
 	"can_read_own_object" TINYINT  NOT NULL,
@@ -58,7 +58,6 @@ sqls.push(`CREATE TABLE "role_resources" (
 	"is_active" INTEGER  NOT NULL,
 	PRIMARY KEY ("code")
 );`);
-
 
 sqls.push(`CREATE TABLE "purchase_orders" (
 	"id" VARCHAR(60) NOT NULL,
