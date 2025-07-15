@@ -1,16 +1,27 @@
 import { IEventHandler, IEventSubscriber } from "../../../modules/common/IEventSubscriber";
-import { myEmitter } from "./EventPublisher";
+import { RabbitSubscriber } from "./subscriber";
 
-export class EventSubscriber implements IEventSubscriber {
+export class RabbitEventSubscriber implements IEventSubscriber {
     private listeners: Map<string, IEventHandler[]> = new Map();
+    private rabbitSub: RabbitSubscriber;
+    private url = process.env.RABBIT_URL || "";
+    private queue = process.env.RABBIT_QUEUE || "";
     constructor() {
-        // Initialize the event emitter listeners
-        myEmitter.on("error", (err) => {
-            console.error("EventEmitter error:", err);
-        });
+        this.rabbitSub = new RabbitSubscriber();
     }
-    public async init(): Promise<void> {
 
+    public async init(): Promise<void> {
+        await this.rabbitSub.connect(this.url);
+        const _self = this;
+        await this.rabbitSub.subscribe(this.queue, (msg: any) => {
+            const {eventName, eventData} = JSON.parse(msg);
+            if (_self.listeners.has(eventName)) {
+                _self.listeners?.get(eventName)?.forEach((l) => {
+                    l.handle(eventData);
+                });                
+            }
+
+        });
     }
     public handlesEventName(eventName: string):boolean{
         return this.listeners.has(eventName);
@@ -18,12 +29,6 @@ export class EventSubscriber implements IEventSubscriber {
     public subscribe(eventName: string, callback: IEventHandler): void {
         if (!this.listeners.has(eventName)) {
             this.listeners.set(eventName, []);
-            myEmitter.on(eventName, (data: string) => {
-                const parsedData = JSON.parse(data);
-                this.listeners.get(eventName)?.forEach((handler) => {
-                    handler.handle(parsedData);
-                });
-            });
         }
         const idx = this.listeners.get(eventName)?.findIndex((h) => h.getID() === callback.getID()) ;
         if (idx === undefined || idx < 0) {

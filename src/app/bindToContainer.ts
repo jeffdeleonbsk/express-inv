@@ -3,6 +3,8 @@ import { container } from "./common/diContainer";
 import TokenMap from "./common/tokenMap";
 import { EventPublisher } from "./infrastructure/nodeEvents/EventPublisher";
 import { EventSubscriber } from "./infrastructure/nodeEvents/EventSubscriber";
+import { RabbitEventPublisher } from "./infrastructure/rabbit/RabbitEventPublisher";
+import { RabbitEventSubscriber } from "./infrastructure/rabbit/RabbitEventSubscriber";
 import { AuthService } from "./infrastructure/services/authService";
 import { EventBasedInventoryAddService } from "./infrastructure/services/EventBasedInventoryAddService";
 import { InventoryAddService } from "./infrastructure/services/InventoryAddService";
@@ -43,12 +45,20 @@ export function bindToContainer() {
         .toInstance(InventoryDbSqlite)
         .inSingletonScope();
     container
-        .bind(TokenMap.eventSubscriber)
+        .bind(TokenMap.localEventSubscriber)
         .toInstance(EventSubscriber)
         .inSingletonScope();
     container
-        .bind(TokenMap.eventPublisher)
+        .bind(TokenMap.localEventPublisher)
         .toInstance(EventPublisher)
         .inSingletonScope();
 
+    container
+        .bind(TokenMap.remoteEventSubscriber)
+        .toInstance(RabbitEventSubscriber)
+        .inSingletonScope();
+    container
+        .bind(TokenMap.remoteEventPublisher)
+        .toInstance(RabbitEventPublisher)
+        .inSingletonScope();        
 }

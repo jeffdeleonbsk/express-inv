@@ -17,7 +17,9 @@ const tokenMap = {
     purchaseOrderDb: token<IPurchaseOrderDb>("PurchaseOrderDb"),
     inventoryAddService: token<IAddToInventoryService>("inventoryAddService"),
     inventoryDb: token<IInventoryDb>("inventoryDb"),
-    eventSubscriber: token<IEventSubscriber>("eventSubscriber"),
-    eventPublisher: token<IEventPublisher>("eventPublisher"),
+    localEventSubscriber: token<IEventSubscriber>("localEventSubscriber"),
+    localEventPublisher: token<IEventPublisher>("localEventPublisher"),
+    remoteEventSubscriber: token<IEventSubscriber>("remoteEventSubscriber"),
+    remoteEventPublisher: token<IEventPublisher>("remoteEventPublisher"),    
 };
 export default tokenMap;

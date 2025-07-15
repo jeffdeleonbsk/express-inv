@@ -7,13 +7,12 @@ import TokenMap from "../../common/tokenMap";
 
 export class EventBasedInventoryAddService implements IAddToInventoryService {
     public async addStock(productId: string, warehouseId: string, deliveredQuantity: Quantity): Promise<void> {
-        console.log("Adding stock to inventory:", productId, warehouseId, deliveredQuantity);
         const event = new PurchaseOrderDeliveredEvent(
             productId,
             warehouseId,
             deliveredQuantity
         );
-        const eventPublisher = getInstance(TokenMap.eventPublisher) as IEventPublisher;
+        const eventPublisher = getInstance(TokenMap.localEventPublisher) as IEventPublisher;
         eventPublisher.publish("PurchaseOrderDeliveredEvent", event);
     }
 }
