@@ -18,12 +18,12 @@ export class RabbitEventSubscriber implements IEventSubscriber {
             if (_self.listeners.has(eventName)) {
                 _self.listeners?.get(eventName)?.forEach((l) => {
                     l.handle(eventData);
-                });                
+                });
             }
 
         });
     }
-    public handlesEventName(eventName: string):boolean{
+    public handlesEventName(eventName: string): boolean {
         return this.listeners.has(eventName);
     }
     public subscribe(eventName: string, callback: IEventHandler): void {

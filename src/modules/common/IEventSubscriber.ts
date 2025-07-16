@@ -7,5 +7,5 @@ export interface IEventSubscriber {
     init(): Promise<void>;
     subscribe(eventName: string, callback: IEventHandler): void;
     unsubscribe(eventName: string, id: string): void;
-    handlesEventName(eventName: string):boolean;
+    handlesEventName(eventName: string): boolean;
 }

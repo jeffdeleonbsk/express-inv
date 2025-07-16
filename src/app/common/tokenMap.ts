@@ -20,6 +20,6 @@ const tokenMap = {
     localEventSubscriber: token<IEventSubscriber>("localEventSubscriber"),
     localEventPublisher: token<IEventPublisher>("localEventPublisher"),
     remoteEventSubscriber: token<IEventSubscriber>("remoteEventSubscriber"),
-    remoteEventPublisher: token<IEventPublisher>("remoteEventPublisher"),    
+    remoteEventPublisher: token<IEventPublisher>("remoteEventPublisher"),
 };
 export default tokenMap;

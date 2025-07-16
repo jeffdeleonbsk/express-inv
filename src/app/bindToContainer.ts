@@ -60,5 +60,5 @@ export function bindToContainer() {
     container
         .bind(TokenMap.remoteEventPublisher)
         .toInstance(RabbitEventPublisher)
-        .inSingletonScope();        
+        .inSingletonScope();
 }

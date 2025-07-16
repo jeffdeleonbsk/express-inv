@@ -12,7 +12,7 @@ export class EventSubscriber implements IEventSubscriber {
     public async init(): Promise<void> {
 
     }
-    public handlesEventName(eventName: string):boolean{
+    public handlesEventName(eventName: string): boolean {
         return this.listeners.has(eventName);
     }
     public subscribe(eventName: string, callback: IEventHandler): void {

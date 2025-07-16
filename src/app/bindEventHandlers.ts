@@ -14,8 +14,8 @@ export async function bindEventHandlers() {
     await remotePublisher.init();
 
     const remoteSubscriber = getInstance(TokenMap.remoteEventSubscriber);
-    await remoteSubscriber.init();    
-    
+    await remoteSubscriber.init();
+
     // Subscribe to PurchaseOrderDeliveredEvent
     localSubscriber.subscribe("PurchaseOrderDeliveredEvent", new PurchaseOrderDeliveredEventHandler());
 
