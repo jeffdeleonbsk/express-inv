@@ -2,6 +2,7 @@
 import { Product, Vendor, Warehouse } from "../modules/domain/common/commonEntities";
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
 import { Money, Quantity } from "../modules/domain/common/genericValueObjects";
+import { UserAccess } from "../modules/domain/interfaces/iUserAccessService";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
 import { PurchaseOrderLineItem } from "../modules/purchaseOrder/models/PurchaseOrderLineItem";
 
@@ -11,6 +12,8 @@ describe("PurchaseOrder domain model", () => {
   const regularWarehouse = Warehouse.fromDb("w2", "WH2", "Dry Storage", true, false);
   const frozenFish = Product.fromDb("p1", "SKU1", "Frozen Fish", true, true);
   const rice = Product.fromDb("p2", "SKU2", "Rice", true, false);
+  const userId = "userWithAccess";
+
 
   it("should create a DRAFT purchase order", () => {
     const po = PurchaseOrder.createNew(vendor, new Date(), "Urgent");
@@ -19,7 +22,7 @@ describe("PurchaseOrder domain model", () => {
   });
 
   it("should add a line item with correct warehouse-product match", () => {
-    const po = PurchaseOrder.createNew(vendor, new Date());
+    const po = PurchaseOrder.createNew(vendor, new Date(), userId);
     const item = PurchaseOrderLineItem.createNew(frozenFish, refrigeratedWarehouse, new Quantity(10, "kg"), new Money(200, "PhP"));
     po.addLineItem(item);
     expect(po.lineItems.length).toBe(1);
@@ -46,7 +49,7 @@ describe("PurchaseOrder domain model", () => {
   });
 
   it("should confirm a DRAFT purchase order with all DRAFT line items", () => {
-    const po = PurchaseOrder.createNew(vendor, new Date());
+    const po = PurchaseOrder.createNew(vendor, new Date(), userId);
     const item1 = PurchaseOrderLineItem.createNew(rice, regularWarehouse, new Quantity(5, "50kg sacks")  , new Money(10, "PhP"));
     const item2 = PurchaseOrderLineItem.createNew(rice, regularWarehouse, new Quantity(10, "50kg sacks"), new Money(12, "PhP"));
     po.addLineItem(item1);
@@ -58,7 +61,7 @@ describe("PurchaseOrder domain model", () => {
   });
 
   it("should cancel a DRAFT purchase order with all DRAFT line items", () => {
-    const po = PurchaseOrder.createNew(vendor, new Date());
+    const po = PurchaseOrder.createNew(vendor, new Date(), userId);
     const item = PurchaseOrderLineItem.createNew(rice, regularWarehouse, new Quantity(5, "50kg sacks"), new Money(10, "PhP"));
     po.addLineItem(item);
     po.cancel(new Date(), "Client cancelled");
@@ -67,7 +70,7 @@ describe("PurchaseOrder domain model", () => {
   });
 
   it("should throw if trying to confirm a non-DRAFT purchase order", () => {
-    const po = PurchaseOrder.createNew(vendor, new Date());
+    const po = PurchaseOrder.createNew(vendor, new Date(), userId);
     po.cancel(new Date(), "Cancelled");
     expect(() => po.confirm(new Date(), "Oops")).toThrow("Only DRAFT purchase orders can be confirmed.");
   });

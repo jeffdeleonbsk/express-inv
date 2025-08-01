@@ -58,3 +58,33 @@ export class Product {
     public readonly needRefrigeration: boolean
   ) {}
 }
+
+export abstract class BaseUser {
+    public get id(): string {
+        return this._id;
+    }
+    public get firstname(): string {
+        return this._firstname;
+    }
+    public get lastname(): string {
+        return this._lastname;
+    }
+    public get email(): string {
+        return this._email;
+    }
+    protected constructor(
+        protected _id: string,
+        protected _firstname: string,
+        protected _lastname: string,
+        protected _email: string
+    ) {
+    }
+    public abstract canRead(): boolean;
+    public abstract canReadOwn(): boolean;
+    public abstract canList(): boolean;
+    public abstract canListOwn(): boolean;
+    public abstract canCreate(): boolean;
+    public abstract canUpdateOwn(): boolean;
+    public abstract canDeleteOwn(): boolean;
+
+}

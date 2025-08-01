@@ -2,25 +2,23 @@ import { Validator } from "node-input-validator";
 import { DomainError } from "./domainError";
 import { Result } from "./result";
 
-export abstract class BaseCommand<T extends object, U extends object>  {
+export abstract class BaseQuery<T extends object, U extends object>  {
     protected request: T;
     public constructor(req: T) {
         this.request = req;
+
     }
 
-    public async execute(): Promise<Result<U>> {
+    public async get(): Promise<Result<U>> {
         const retValidation = await this.validate();
         if (retValidation.isSuccess === false) {
             return retValidation;
         }
-
         try {
-            const ret = await this.doCommand();
+            const ret = await this.doQuery();
             if (ret.isSuccess === false) {
                 return ret;
             }
-            // If the command was successful, publish the event
-            this.publishEvent(ret.result);
             return ret;
         } catch (e: any) {
             if (e instanceof DomainError) {
@@ -32,15 +30,10 @@ export abstract class BaseCommand<T extends object, U extends object>  {
         }
 
     }
-
-  
-
-    protected abstract doCommand(): Promise<Result<U>>;
-
-    protected publishEvent(response: U) {
-        // just an empty method to be overridden by subclasses if needed
-        // this is where you can publish events or perform actions after command execution
+    protected async checkAuthorization(): Promise<Result<U>> {
+        return Result.Ok(null!);
     }
+    protected abstract doQuery(): Promise<Result<U>>;
 
     protected getValidationRules(): any {
         return {};

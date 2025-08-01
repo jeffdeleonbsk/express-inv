@@ -2,6 +2,7 @@ import { BaseCommand } from "../../common/baseCommand";
 import { Result } from "../../common/result";
 import { Product, Vendor, Warehouse } from "../../domain/common/commonEntities";
 import { Money, Quantity } from "../../domain/common/genericValueObjects";
+import { IUserAccessService } from "../../domain/interfaces/iUserAccessService";
 import { IPurchaseOrderDb } from "../iPurchaseOrderDb";
 import { PurchaseOrder} from "../models/PurchaseOrderCreation";
 
@@ -9,7 +10,8 @@ export class CreatePurchaseOrderRequest {
     constructor(
         public vendorId: string,
         public date: Date,
-        public comment: string | undefined
+        public comment: string | "",
+        public authUserId: string
 
     ) {}
 }
@@ -27,18 +29,26 @@ export class CreatePurchaseOrderCmd extends BaseCommand<CreatePurchaseOrderReque
         super(req);
         this.db = db;
     }
+
     public async doCommand(): Promise<Result<CreatePurchaseOrderResponse>> {
         const vendor = await this.db.getVendorById(this.request.vendorId);
-        const po = PurchaseOrder.createNew(vendor, this.request.date, this.request.comment);
-        // Save to DB
+        const po = PurchaseOrder.createNew(vendor, this.request.date, this.request.authUserId, this.request.comment);
         await this.db.addPO(po);
         return Result.Ok(CreatePurchaseOrderResponse.mapFromPO(po));
-
     }
     protected getValidationRules(): any {
         return {
             vendorId: "required",
-            date: "required|date"
+            date: "required|date",
+            authUserId: "required"
         };
     }
+    // protected async isAuthorized(): Promise<boolean> {
+    //     return await this.uas.isAllowed(
+    //         this.request.authUserId, 
+    //         "PURCHASE_ORDER", 
+    //         "CREATE"
+    //     );
+    // }
+
 }

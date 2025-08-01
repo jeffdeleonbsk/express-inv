@@ -1,6 +1,7 @@
 import { Product, Warehouse } from "../modules/domain/common/commonEntities";
 import { LineItemStatus, PurchaseOrderStatus } from "../modules/domain/common/enums";
 import { Quantity } from "../modules/domain/common/genericValueObjects";
+import { UserAccess } from "../modules/domain/interfaces/iUserAccessService";
 import { Delivery, IAddToInventoryService, ReceivingLineItem, ReceivingPurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderReceiving";
 
 describe("ReceivingPurchaseOrder", () => {
@@ -35,6 +36,8 @@ describe("ReceivingPurchaseOrder", () => {
 
   const date = new Date("2025-07-08");
   const comment = "Received partial delivery";
+  const userId = "userWithAccess";
+
 
   const createTestLineItem = (id: string= "line-item-id", productId: string= "product-1", warehouseId: string= "warehouse-1"): ReceivingLineItem => {
     const product = Product.fromDb(productId, productId, "Test Product", true, false);
@@ -61,6 +64,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
+          ownerId: userId,
           dateConfirmed: new Date("2025-07-01")
     });
 
@@ -87,6 +91,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
+          ownerId: userId,
           dateConfirmed: new Date("2025-07-01")
     });
     po.receiveDelivery("line-item-id", delivery, mockInventoryService);
@@ -103,6 +108,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
+          ownerId: userId,
           dateConfirmed: new Date("2025-07-01")
     });
 
@@ -119,6 +125,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.DRAFT_CANCELLED,
           lineItems: [lineItem],
+          ownerId: userId,
           dateConfirmed: undefined
     });
 
@@ -134,6 +141,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem],
+          ownerId: userId,
           dateConfirmed: new Date("2025-07-01")
     });
 
@@ -152,6 +160,7 @@ describe("ReceivingPurchaseOrder", () => {
           id: "po-1",
           status: PurchaseOrderStatus.CONFIRMED,
           lineItems: [lineItem, line2],
+          ownerId: userId,
           dateConfirmed: new Date("2025-07-01")
     });
 

@@ -126,7 +126,18 @@ This project is an exercise in using **Domain Driven Design (DDD)** to create a 
 
 ---
 
-## License
-MIT
+## Programmer Workflow in API
+
+### New feature
+- Add the function to the aggregate root/domain model
+- Modify the Repository Interface. 
+- Use copilot to Create the unit test for the new function, No DB, just the domain model
+- Use copilot to Create the command or query for the new feature.
+- Use copilot to Create the Unit test for the command
+- Modify the Repository implementation. 
+
+### New Aggregate
+
+
 
 

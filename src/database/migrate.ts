@@ -8,16 +8,16 @@ const db = new Database(dbName);
 const sqls: string[] = [];
 
 sqls.push(`DROP TABLE IF EXISTS "users";`);
-sqls.push(`DROP TABLE IF EXISTS "roles";`);
-sqls.push(`DROP TABLE IF EXISTS "role_access";`);
-sqls.push(`DROP TABLE IF EXISTS "role_resources";`);
-sqls.push(`DROP TABLE IF EXISTS "purchase_orders";`);
-sqls.push(`DROP TABLE IF EXISTS "purchase_order_line_items";`);
-sqls.push(`DROP TABLE IF EXISTS "deliveries";`);
+sqls.push(`DROP TABLE IF EXISTS "products";`);
 sqls.push(`DROP TABLE IF EXISTS "vendors";`);
 sqls.push(`DROP TABLE IF EXISTS "warehouses";`);
-sqls.push(`DROP TABLE IF EXISTS "products";`);
+sqls.push(`DROP TABLE IF EXISTS "deliveries";`);
+sqls.push(`DROP TABLE IF EXISTS "purchase_order_line_items";`);
+sqls.push(`DROP TABLE IF EXISTS "purchase_orders";`);
 sqls.push(`DROP TABLE IF EXISTS "inventory_items";`);
+sqls.push(`DROP TABLE IF EXISTS "roles";`);
+sqls.push(`DROP TABLE IF EXISTS "role_access";`);
+sqls.push(`DROP TABLE IF EXISTS "role_resource_access";`);
 
 sqls.push(`CREATE TABLE "users" (
 	"id" VARCHAR(60) NOT NULL,
@@ -37,26 +37,15 @@ sqls.push(`CREATE TABLE "roles" (
 	"is_active" INTEGER  NOT NULL,
 	PRIMARY KEY ("code")
 );`);
-sqls.push(`CREATE TABLE "role_access" (
-	"id" VARCHAR(60) NOT NULL,
-	"role_code" VARCHAR(20)  NOT NULL,
-	"resource_code" VARCHAR(20)  NOT NULL,
-	"can_list" TINYINT  NOT NULL,
-	"can_read_own_object" TINYINT  NOT NULL,
-	"can_update_own_object" TINYINT  NOT NULL,
-	"can_delete_own_object" TINYINT  NOT NULL,
-	"can_delete_object" TINYINT  NOT NULL,
-	"can_add_object" TINYINT  NOT NULL,
-	"can_update_object" TINYINT  NOT NULL,
-	PRIMARY KEY ("id")
-);`);
 
-sqls.push(`CREATE TABLE "role_resources" (
-	"code" VARCHAR(20)  NOT NULL,
-	"name" VARCHAR(50)  NOT NULL,
-	"description" VARCHAR(50) NULL,
-	"is_active" INTEGER  NOT NULL,
-	PRIMARY KEY ("code")
+
+
+sqls.push(`CREATE TABLE "role_resource_access" (
+	"resource_code" VARCHAR(60)  NOT NULL,
+	"role_code" VARCHAR(60)  NOT NULL,
+	"action" VARCHAR(50) NULL,
+	"blanket_allow" INTEGER  NOT NULL,
+	"allow_only_on_owned_resource" INTEGER  NOT NULL
 );`);
 
 sqls.push(`CREATE TABLE "purchase_orders" (
@@ -98,8 +87,7 @@ sqls.push(`CREATE TABLE "purchase_order_line_items" (
 	"cancelled_comment" VARCHAR(255) NULL,
 	"closed_comment" VARCHAR(255) NULL,
 	"confirmed_comment" VARCHAR(255) NULL,
-	PRIMARY KEY ("id"),
-	FOREIGN KEY("purchase_order_id") REFERENCES "purchase_orders"("id")
+	PRIMARY KEY ("id")
 );`);
 
 sqls.push(`CREATE TABLE "deliveries" (
@@ -109,8 +97,7 @@ sqls.push(`CREATE TABLE "deliveries" (
 	"delivery_comment" TEXT,
 	"delivered_quantity" REAL NOT NULL,
 	"delivered_quantity_unit" VARCHAR(20) NOT NULL,
-	PRIMARY KEY ("id"),
-	FOREIGN KEY("line_item_id") REFERENCES "purchase_order_line_items"("id")
+	PRIMARY KEY ("id")
 );`);
 
 sqls.push(`CREATE TABLE "vendors" (
@@ -149,5 +136,6 @@ sqls.push(`CREATE TABLE "inventory_items" (
 );`);
 
 sqls.forEach((sql) => {
+	//console.log(sql);
     db.exec(sql);
 });

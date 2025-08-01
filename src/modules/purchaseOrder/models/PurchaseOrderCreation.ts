@@ -34,6 +34,7 @@ export class PurchaseOrder extends MutableObject implements ILineItemParent {
   get dateCancelled(): Date | undefined {
     return this._dateCancelled;
   }
+public static readonly resourceCode = "PURCHASE_ORDER";
 public static fromDb(params: {
     id: string;
     vendor: Vendor;
@@ -41,6 +42,7 @@ public static fromDb(params: {
     comment?: string;
     status: PurchaseOrderStatus;
     lineItems: PurchaseOrderLineItem[];
+    ownerId: string;
     confirmComment?: string;
     cancelComment?: string;
     dateConfirmed?: Date;
@@ -50,6 +52,7 @@ public static fromDb(params: {
       params.id,
       params.vendor,
       params.date,
+      params.ownerId,
       params.comment
     );
 
@@ -66,14 +69,16 @@ public static fromDb(params: {
   public static createNew(
     vendor: Vendor|null,
     date: Date,
+    ownerId: string,
     comment?: string
   ): PurchaseOrder {
+
     if (vendor === null || vendor === undefined) {
       throw new DomainError("Vendor must be provided.");
     }
     if (!vendor.isActive) { throw new DomainError("Vendor must be active."); }
     const id = "PO-" + uuidv4();
-    const po = new PurchaseOrder(id, vendor, date, comment);
+    const po = new PurchaseOrder(id, vendor, date, ownerId, comment);
     po.isNew = true;
     return po;
   }
@@ -81,6 +86,7 @@ public static fromDb(params: {
   public readonly vendor: Vendor;
   public readonly date: Date;
   public readonly comment?: string;
+  public readonly ownerId: string;
 
   private _status: PurchaseOrderStatus = PurchaseOrderStatus.DRAFT;
   private _lineItems: PurchaseOrderLineItem[] = [];
@@ -88,11 +94,11 @@ public static fromDb(params: {
   private _cancelComment?: string;
   private _dateConfirmed?: Date;
   private _dateCancelled?: Date;
-
   private constructor(
     id: string,
     vendor: Vendor,
     date: Date,
+    ownerId: string,
     comment?: string
   ) {
     super();
@@ -100,11 +106,13 @@ public static fromDb(params: {
     this.date = date;
     this.comment = comment;
     this.id = id;
+    this.ownerId = ownerId;
   }
 
   // --- Behavior ---
 
   public addLineItem(item: PurchaseOrderLineItem) {
+
     if (this._status !== PurchaseOrderStatus.DRAFT) {
       throw new DomainError("Can only add line items in DRAFT status.");
     }

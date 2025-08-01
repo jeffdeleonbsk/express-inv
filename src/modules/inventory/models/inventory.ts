@@ -6,7 +6,7 @@ import { Product, Warehouse } from "../../domain/common/commonEntities";
 import { Quantity } from "../../domain/common/genericValueObjects";
 
 export class InventoryEntry {
-
+  public static readonly resourceCode = "INVENTORY";
   public static fromDb(params: {
     id: string;
     product: Product;

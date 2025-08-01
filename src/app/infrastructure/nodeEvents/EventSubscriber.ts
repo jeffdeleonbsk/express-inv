@@ -10,7 +10,7 @@ export class EventSubscriber implements IEventSubscriber {
         });
     }
     public async init(): Promise<void> {
-
+        return;
     }
     public handlesEventName(eventName: string): boolean {
         return this.listeners.has(eventName);

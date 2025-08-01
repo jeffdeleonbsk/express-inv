@@ -1,9 +1,7 @@
 import * as bcrypt from "bcrypt";
 import { DomainError } from "../../common/domainError";
 import { UserStatus } from "../../domain/common/enums";
-import { Role } from "./role";
-import { RoleAccess } from "./roleAccess";
-import { RoleResource } from "./roleResource";
+import { Role } from "../../authz/models/role";
 
 // Aggregate Root
 export class User {
@@ -23,10 +21,7 @@ export class User {
         return this._status;
     }
     public get roleCode(): string  {
-        if (this._role) {
-            return this._role.code;
-        }
-        return "";
+        return this._roleCode
     }
     public static fromDb(
         id: string,
@@ -35,9 +30,9 @@ export class User {
         email: string,
         password: string,
         status: UserStatus,
-        role: Role | null
+        roleCode: string 
     ) {
-        return new User(id, firstname, lastname, email, password, status, role);
+        return new User(id, firstname, lastname, email, password, status, roleCode);
     }
     private constructor(
         private _id: string,
@@ -46,39 +41,8 @@ export class User {
         private _email: string,
         private _password: string,
         private _status: UserStatus,
-        private _role: Role | null
+        private _roleCode: string 
     ) {
-    }
-    public hasReadAccess(resource: RoleResource, ownerId: string): boolean {
-        const ra = this.getAccess(resource.code);
-        if (ra === undefined) {
-            return false;
-        }
-        if (ra.canList) { return true; }
-        return (ra.canReadOwnObject && this._id === ownerId);
-    }
-    public hasAddAccess(resource: RoleResource, ownerId: string): boolean {
-        const ra = this.getAccess(resource.code);
-        if (ra === undefined) {
-            return false;
-        }
-        return ra.canAddObject;
-    }
-    public hasDeleteAccess(resource: RoleResource, ownerId: string): boolean {
-        const ra = this.getAccess(resource.code);
-        if (ra === undefined) {
-            return false;
-        }
-        if (ra.canDeleteObject) { return true; }
-        return (ra.canDeleteOwnObject && this._id === ownerId);
-    }
-    public hasUpdateAccess(resource: RoleResource, ownerId: string): boolean {
-        const ra = this.getAccess(resource.code);
-        if (ra === undefined) {
-            return false;
-        }
-        if (ra.canUpdateObject) { return true; }
-        return (ra.canUpdateOwnObject && this._id === ownerId);
     }
     public isActive(): boolean {
         return this.status.toUpperCase() === UserStatus.ACTIVE;
@@ -88,11 +52,5 @@ export class User {
             throw new DomainError("Cannot login inactive user");
         }
         return await bcrypt.compare(password, this._password);
-    }
-    private getAccess(resourceCode: string): RoleAccess|undefined {
-        if (this._role) {
-            return this._role.getRoleAccess(resourceCode);
-        }
-        return undefined;
     }
 }

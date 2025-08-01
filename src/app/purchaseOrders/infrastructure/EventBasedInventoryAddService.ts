@@ -13,6 +13,6 @@ export class EventBasedInventoryAddService implements IAddToInventoryService {
             deliveredQuantity
         );
         const eventPublisher = getInstance(TokenMap.localEventPublisher) as IEventPublisher;
-        eventPublisher.publish("PurchaseOrderDeliveredEvent", event);
+        eventPublisher.publish(event.constructor.name, event);
     }
 }

@@ -1,26 +1,22 @@
+import amqp from "amqplib";
 import { IEventHandler, IEventSubscriber } from "../../../modules/common/IEventSubscriber";
-import { RabbitSubscriber } from "./subscriber";
+import { RabbitConnection } from "./rabbitConnection";
 
 export class RabbitEventSubscriber implements IEventSubscriber {
     private listeners: Map<string, IEventHandler[]> = new Map();
-    private rabbitSub: RabbitSubscriber;
     private url = process.env.RABBIT_URL || "";
     private queue = process.env.RABBIT_QUEUE || "";
-    constructor() {
-        this.rabbitSub = new RabbitSubscriber();
-    }
 
     public async init(): Promise<void> {
-        await this.rabbitSub.connect(this.url);
+        await RabbitConnection.initConnection(this.url);
         const _self = this;
-        await this.rabbitSub.subscribe(this.queue, (msg: any) => {
+        await this.subscribeToQueue(this.queue, (msg: any) => {
             const {eventName, eventData} = JSON.parse(msg);
             if (_self.listeners.has(eventName)) {
                 _self.listeners?.get(eventName)?.forEach((l) => {
                     l.handle(eventData);
                 });
             }
-
         });
     }
     public handlesEventName(eventName: string): boolean {
@@ -46,5 +42,16 @@ export class RabbitEventSubscriber implements IEventSubscriber {
         if (idx !== undefined && idx >= 0) {
             this.listeners.get(eventName)?.splice(idx, 1);
         }
+    }
+    private async subscribeToQueue(queue: string, onMessage: (msg: any) => void) {
+        if (!RabbitConnection.channel) { throw new Error("Channel not initialized"); }
+        await RabbitConnection.channel.assertQueue(queue, { durable: true });
+        RabbitConnection.channel.consume(queue, (msg) => {
+            if (msg) {
+                const content = msg.content.toString();
+                onMessage(content);
+                RabbitConnection.channel!.ack(msg);
+            }
+        });
     }
 }

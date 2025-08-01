@@ -8,16 +8,16 @@ import { DeactivateUserCmd, DeactivateUserRequest } from "../../modules/users/co
 import { UpdateUserNameCmd, UpdateUserRequest } from "../../modules/users/commands/updateUserNameCmd";
 import { getInstance } from "../common/diContainer";
 import TokenMap from "../common/tokenMap";
-import { authAdmin } from "../middlewares/authAdmin";
+import { authJwt } from "../middlewares/authMiddleware";
 const router: Router = Router();
 
-router.get("/:id", authAdmin, async (request: Request, response: Response) => {
+router.get("/:id", authJwt, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const ret = await db.GetUserById(request.params.id);
     response.json(ret);
 });
 
-router.post("/", authAdmin, async (request: Request, response: Response) => {
+router.post("/", authJwt, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const emailService: IEmailExistsService = getInstance(TokenMap.emailExistsService);
     const {firstname, lastname, email, status, role} = request.body;
@@ -28,7 +28,7 @@ router.post("/", authAdmin, async (request: Request, response: Response) => {
     response.status(cmdResult.isSuccess ? 200 : 422).json(cmdResult);
 });
 
-router.put("/:id/update-names", authAdmin, async (request: Request, response: Response) => {
+router.put("/:id/update-names", authJwt, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const {firstname, lastname} = request.body;
 
@@ -38,14 +38,14 @@ router.put("/:id/update-names", authAdmin, async (request: Request, response: Re
     response.status(cmdResult.isSuccess ? 200 : 422).json(cmdResult);
 });
 
-router.put("/:id/activate", authAdmin, async (request: Request, response: Response) => {
+router.put("/:id/activate", authJwt, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const cmdRequest = new ActivateUserRequest(request.params.id);
     const cmd = new ActivateUserCmd(cmdRequest, db);
     const cmdResult = await cmd.execute();
     response.status(cmdResult.isSuccess ? 200 : 422).json(cmdResult);
 });
-router.put("/:id/deactivate", authAdmin, async (request: Request, response: Response) => {
+router.put("/:id/deactivate", authJwt, async (request: Request, response: Response) => {
     const db = getInstance(TokenMap.userDb);
     const cmdRequest = new DeactivateUserRequest(request.params.id);
     const cmd = new DeactivateUserCmd(cmdRequest, db);

@@ -35,6 +35,9 @@ export class LoginUserCmd extends BaseCommand<LoginUserRequest, LoginUserRespons
         const token = this.authService.getToken({ userId: usr.id, username: usr.email });
         return Result.Ok(new LoginUserResponse(usr.id, token));
     }
+    protected async checkAuthorization(): Promise<Result<LoginUserResponse>> {
+        return Result.Ok(null!);
+    }
     protected getValidationRules(): any {
         return {
           email: "required|email",

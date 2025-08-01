@@ -2,6 +2,7 @@ import { Result } from "../modules/common/result";
 import { Vendor } from "../modules/domain/common/commonEntities";
 import { CreatePurchaseOrderCmd, CreatePurchaseOrderRequest } from "../modules/purchaseOrder/commands/createPurchaseOrderCmd";
 import { PurchaseOrder } from "../modules/purchaseOrder/models/PurchaseOrderCreation";
+import { MockUserAccessService } from "./MockUserAccessService";
 
 describe("CreatePurchaseOrderCmd", () => {
     const mockDb = {
@@ -17,7 +18,7 @@ describe("CreatePurchaseOrderCmd", () => {
         const vendor = Vendor.fromDb("v1", "VEND1", "Acme Supplies", true);
         mockDb.getVendorById.mockResolvedValue(vendor);
         mockDb.addPO.mockResolvedValue(1);
-        const req = new CreatePurchaseOrderRequest(vendor.id, new Date("2025-07-13"), "Test PO");
+        const req = new CreatePurchaseOrderRequest(vendor.id, new Date("2025-07-13"), "Test PO", "User1");
         const cmd = new CreatePurchaseOrderCmd(req, mockDb as any);
         const result = await cmd.execute();
         expect(result.isSuccess).toBe(true);
@@ -28,7 +29,7 @@ describe("CreatePurchaseOrderCmd", () => {
 
     it("should fail if vendor is not found", async () => {
         mockDb.getVendorById.mockResolvedValue(null);
-        const req = new CreatePurchaseOrderRequest("bad-id", new Date(), "");
+        const req = new CreatePurchaseOrderRequest("bad-id", new Date(), "", "User1");
         const cmd = new CreatePurchaseOrderCmd(req, mockDb as any);
         const result = await cmd.execute();
         expect(result.isSuccess).toBe(false);

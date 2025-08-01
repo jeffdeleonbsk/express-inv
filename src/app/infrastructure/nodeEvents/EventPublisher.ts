@@ -5,6 +5,7 @@ export const myEmitter = new EventEmitter();
 
 export class EventPublisher implements IEventPublisher {
     public async init(): Promise<void> {
+        return;
     }
     public async publish<T extends object>(eventName: string, eventData: T): Promise<void> {
         const strData = JSON.stringify(eventData);

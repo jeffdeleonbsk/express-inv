@@ -58,6 +58,7 @@ export class Delivery extends MutableObject {
 }
 
 export class ReceivingLineItem extends MutableObject {
+
     public static fromDb(params: {
         id: string;
         product: Product;
@@ -114,6 +115,7 @@ export class ReceivingLineItem extends MutableObject {
     private _deliveredComment?: string;
     private _dateCancelled?: Date;
     private _cancelledComment?: string;
+    private _user: any;
     private constructor(
         public readonly id: string,
         public readonly product: Product,
@@ -150,7 +152,6 @@ export class ReceivingLineItem extends MutableObject {
 
         this._deliveries.push(delivery);
         this._deliveredQuantity = new Quantity(this._deliveredQuantity.value + delivery.deliveredQuantity.value, this._deliveredQuantity.unit);
-        inventory.addStock(this.product.id, this.warehouse.id, delivery.deliveredQuantity);
 
         if (this._deliveredQuantity.value >= this.orderedQuantity.value) {
             this._status = LineItemStatus.FULLY_DELIVERED;
@@ -160,6 +161,7 @@ export class ReceivingLineItem extends MutableObject {
             this._status = LineItemStatus.PARTIALLY_FULFILLED;
         }
         this.isDirty = true;
+        inventory.addStock(this.product.id, this.warehouse.id, delivery.deliveredQuantity);
     }
 
     public cancel(parent: ILineItemParent, date: Date, comment: string): void {
@@ -180,10 +182,12 @@ export class ReceivingLineItem extends MutableObject {
 }
 
 export class ReceivingPurchaseOrder extends MutableObject implements ILineItemParent {
+    public static readonly resourceCode = "PURCHASE_ORDER";
     public static fromDb(params: {
         id: string;
         status: PurchaseOrderStatus;
         lineItems: ReceivingLineItem[];
+        ownerId: string;
         dateConfirmed?: Date;
         dateDelivered?: Date;
         deliveredComment?: string;
@@ -196,6 +200,7 @@ export class ReceivingPurchaseOrder extends MutableObject implements ILineItemPa
             params.id,
             params.status,
             params.lineItems,
+            params.ownerId,
             params.dateConfirmed,
             params.dateDelivered,
             params.deliveredComment,
@@ -235,6 +240,7 @@ export class ReceivingPurchaseOrder extends MutableObject implements ILineItemPa
 
     private _status: PurchaseOrderStatus;
     private _lineItems: ReceivingLineItem[];
+    private _ownerId: string;
     private _dateConfirmed?: Date;
     private _dateDelivered?: Date;
     private _deliveredComment?: string;
@@ -246,6 +252,7 @@ export class ReceivingPurchaseOrder extends MutableObject implements ILineItemPa
         public readonly id: string,
         status: PurchaseOrderStatus,
         lineItems: ReceivingLineItem[],
+        ownerId: string,
         dateConfirmed?: Date,
         dateDelivered?: Date,
         deliveredComment?: string,
@@ -257,6 +264,7 @@ export class ReceivingPurchaseOrder extends MutableObject implements ILineItemPa
         super();
         this._status = status;
         this._lineItems = lineItems;
+        this._ownerId = ownerId;
         this._dateConfirmed = dateConfirmed;
         this._dateDelivered = dateDelivered;
         this._deliveredComment = deliveredComment;
@@ -308,6 +316,7 @@ export class ReceivingPurchaseOrder extends MutableObject implements ILineItemPa
         });
     }
     public closeOrder(date: Date, comment: string): void {
+
         if (![PurchaseOrderStatus.CONFIRMED, PurchaseOrderStatus.PARTIALLY_FULFILLED].includes(this._status)) {
             throw new DomainError("Purchase order is not in a closable state.");
         }
